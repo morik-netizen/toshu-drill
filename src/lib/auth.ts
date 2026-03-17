@@ -22,11 +22,21 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }),
   ],
   callbacks: {
-    signIn({ user, account }) {
-      if (account?.provider === 'google' && !isAllowedEmail(user.email)) {
-        return '/login?error=AccessDenied'
+    async signIn({ user, account, profile }) {
+      try {
+        if (account?.provider === 'google') {
+          // Use profile email (from Google directly) as primary, user.email as fallback
+          const email = (profile as { email?: string })?.email ?? user.email
+          console.log(`[auth] signIn: email=${email}, user.email=${user.email}, profile.email=${(profile as { email?: string })?.email}`)
+          if (!isAllowedEmail(email)) {
+            return '/login?error=AccessDenied'
+          }
+        }
+        return true
+      } catch (err) {
+        console.error('[auth] signIn callback error:', err)
+        return '/login?error=SignInError'
       }
-      return true
     },
     session({ session, user }) {
       if (session.user) {
