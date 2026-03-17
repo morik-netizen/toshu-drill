@@ -1,6 +1,12 @@
 import { signIn } from '@/lib/auth'
 
-export default function LoginPage() {
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string }>
+}) {
+  const { error } = await searchParams
+
   return (
     <main className="min-h-screen flex flex-col items-center justify-center px-4">
       <div className="w-full max-w-sm text-center">
@@ -8,6 +14,14 @@ export default function LoginPage() {
         <p className="text-muted text-sm mb-8">
           柔道整復師国試 関係法規 393問を完全制覇
         </p>
+
+        {error && (
+          <div className="mb-6 p-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700">
+            {error === 'AccessDenied'
+              ? '学校のGoogleアカウント（@oky.asahi.ac.jp）でログインしてください。個人アカウントでは利用できません。'
+              : 'ログインに失敗しました。もう一度お試しください。'}
+          </div>
+        )}
 
         <form
           action={async () => {
@@ -42,7 +56,9 @@ export default function LoginPage() {
         </form>
 
         <p className="text-xs text-muted mt-6">
-          学校から配布されたGoogleアカウントでログインしてください
+          学校から配布されたGoogleアカウント（@oky.asahi.ac.jp）で
+          <br />
+          ログインしてください
         </p>
       </div>
     </main>
