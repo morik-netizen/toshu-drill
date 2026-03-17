@@ -23,11 +23,14 @@ export const authConfig: NextAuthConfig = {
       }
       return true
     },
-    authorized({ auth, request }) {
-      const isLoggedIn = !!auth?.user
-      const isLoginPage = request.nextUrl.pathname === '/login'
-      if (isLoginPage) return true
-      return isLoggedIn
+    authorized({ request }) {
+      // Database sessions can't be verified at the Edge.
+      // Route protection is handled server-side by requireAuth().
+      // Middleware only handles signIn domain restriction + CSRF.
+      const isPublic =
+        request.nextUrl.pathname === '/login' ||
+        request.nextUrl.pathname === '/~offline'
+      return true
     },
   },
   pages: {
