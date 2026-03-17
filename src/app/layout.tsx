@@ -22,6 +22,9 @@ export const metadata: Metadata = {
     statusBarStyle: 'default',
     title: '関係法規マスター',
   },
+  icons: {
+    apple: '/apple-touch-icon.png',
+  },
   formatDetection: { telephone: false },
 }
 
