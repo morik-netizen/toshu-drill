@@ -3,14 +3,6 @@ import Google from 'next-auth/providers/google'
 import { PrismaAdapter } from '@auth/prisma-adapter'
 import { prisma } from './db'
 
-const ALLOWED_DOMAINS = ['oky.asahi.ac.jp', 'asahi.ac.jp']
-
-function isAllowedEmail(email: string | null | undefined): boolean {
-  if (!email) return false
-  const domain = email.split('@')[1]?.toLowerCase()
-  return ALLOWED_DOMAINS.includes(domain)
-}
-
 export const { handlers, auth, signIn, signOut } = NextAuth({
   trustHost: true,
   secret: process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET,
@@ -22,14 +14,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }),
   ],
   callbacks: {
-    signIn({ user, account }) {
-      if (account?.provider === 'google') {
-        const allowed = isAllowedEmail(user.email)
-        console.log(`[auth] signIn: email=${user.email}, allowed=${allowed}`)
-        return allowed
-      }
-      return true
-    },
     session({ session, user }) {
       if (session.user) {
         session.user.id = user.id
