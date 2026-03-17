@@ -1,9 +1,12 @@
+import 'dotenv/config'
 import { PrismaClient } from '../src/generated/prisma/client'
+import { PrismaPg } from '@prisma/adapter-pg'
 import { parse } from 'csv-parse/sync'
 import * as fs from 'fs'
 import * as path from 'path'
 
-const prisma = new PrismaClient()
+const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! })
+const prisma = new PrismaClient({ adapter })
 
 // カテゴリ → unlock_date マッピング (木曜6:00 AM)
 const UNLOCK_DATES: Record<string, string> = {
