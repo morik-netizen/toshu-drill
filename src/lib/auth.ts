@@ -24,7 +24,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   callbacks: {
     signIn({ user, account }) {
       if (account?.provider === 'google') {
-        return isAllowedEmail(user.email)
+        const allowed = isAllowedEmail(user.email)
+        console.log(`[auth] signIn: email=${user.email}, allowed=${allowed}`)
+        return allowed
       }
       return true
     },
@@ -37,6 +39,5 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   },
   pages: {
     signIn: '/login',
-    error: '/login',
   },
 })
