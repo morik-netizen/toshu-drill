@@ -5,13 +5,14 @@ frontend:
       commands:
         - npm ci
         - npx prisma generate
+        - curl -sS https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem -o global-bundle.pem
         - echo "AUTH_SECRET=$AUTH_SECRET" >> .env.production
         - echo "AUTH_TRUST_HOST=true" >> .env.production
         - echo "AUTH_URL=$AUTH_URL" >> .env.production
         - echo "GOOGLE_CLIENT_ID=$GOOGLE_CLIENT_ID" >> .env.production
         - echo "GOOGLE_CLIENT_SECRET=$GOOGLE_CLIENT_SECRET" >> .env.production
         - echo "DATABASE_URL=$DATABASE_URL" >> .env.production
-        - echo "NODE_TLS_REJECT_UNAUTHORIZED=0" >> .env.production
+        - echo "RDS_CA_CERT=$(base64 -w 0 global-bundle.pem)" >> .env.production
     build:
       commands:
         - npm run build

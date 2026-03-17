@@ -4,7 +4,15 @@ import { PrismaPg } from '@prisma/adapter-pg'
 const globalForPrisma = globalThis as unknown as { prisma: InstanceType<typeof PrismaClient> }
 
 function createPrismaClient() {
-  const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! })
+  const connectionString = process.env.DATABASE_URL!
+  const rdsCaCert = process.env.RDS_CA_CERT
+
+  const adapter = new PrismaPg({
+    connectionString,
+    ssl: rdsCaCert
+      ? { rejectUnauthorized: true, ca: Buffer.from(rdsCaCert, 'base64').toString() }
+      : undefined,
+  })
   return new PrismaClient({ adapter })
 }
 
