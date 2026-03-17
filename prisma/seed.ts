@@ -71,7 +71,7 @@ function buildCorrectAnswers(answer1: string, answer2: string): string {
 async function main() {
   const csvPath = path.resolve(
     __dirname,
-    '../../refelence/関係法規2026年_出題基準ベース項目わけ.csv'
+    '../refelence/関係法規2026年_出題基準ベース項目わけ.csv'
   )
 
   if (!fs.existsSync(csvPath)) {
