@@ -1,8 +1,11 @@
 import Link from 'next/link'
 import { BottomNav } from '@/components/BottomNav'
 import { getHomeProgress } from '@/lib/actions/quiz'
+import { auth, signOut } from '@/lib/auth'
 
 export default async function HomePage() {
+  const session = await auth()
+
   let progress: Awaited<ReturnType<typeof getHomeProgress>> | null = null
   try {
     progress = await getHomeProgress()
@@ -24,6 +27,26 @@ export default async function HomePage() {
             🔥 {progress?.streakDays ?? 0}日目
           </span>
         </div>
+        {session?.user && (
+          <div className="flex items-center justify-between mt-2">
+            <span className="text-xs text-muted">
+              ログイン中: {session.user.name ?? session.user.email}
+            </span>
+            <form
+              action={async () => {
+                'use server'
+                await signOut()
+              }}
+            >
+              <button
+                type="submit"
+                className="text-xs text-muted underline hover:text-foreground"
+              >
+                ログアウト
+              </button>
+            </form>
+          </div>
+        )}
       </header>
 
       {/* 今日の学習 */}
