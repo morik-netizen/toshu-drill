@@ -1,4 +1,4 @@
-'use client'
+import { signIn } from '@/lib/auth'
 
 export default function LoginPage() {
   return (
@@ -9,7 +9,12 @@ export default function LoginPage() {
           柔道整復師国試 関係法規 393問を完全制覇
         </p>
 
-        <form action="/api/auth/signin/google" method="GET">
+        <form
+          action={async () => {
+            'use server'
+            await signIn('google')
+          }}
+        >
           <button
             type="submit"
             className="w-full flex items-center justify-center gap-3 py-3 px-4 bg-white border-2 border-gray-200 rounded-xl font-medium hover:border-primary hover:bg-blue-50 transition-all"
