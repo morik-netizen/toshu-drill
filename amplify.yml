@@ -12,6 +12,7 @@ frontend:
         - echo "GOOGLE_CLIENT_ID=$GOOGLE_CLIENT_ID" >> .env.production
         - echo "GOOGLE_CLIENT_SECRET=$GOOGLE_CLIENT_SECRET" >> .env.production
         - echo "DATABASE_URL=$DATABASE_URL" >> .env.production
+        - echo "NODE_EXTRA_CA_CERTS=/var/task/global-bundle.pem" >> .env.production
     build:
       commands:
         - npm run build
