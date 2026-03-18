@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/db'
 import { auth } from '@/lib/auth'
+import { getHomeProgress } from '@/lib/actions/quiz'
 import { NextResponse } from 'next/server'
 
 export async function GET() {
@@ -18,9 +19,14 @@ export async function GET() {
       answerCount = await prisma.answerHistory.count({ where: { userId } })
     }
 
-    // 全ユーザーの学習記録
-    const totalRecords = await prisma.learningRecord.count()
-    const totalAnswers = await prisma.answerHistory.count()
+    // getHomeProgress テスト
+    let progressResult: unknown = null
+    let progressError: string | null = null
+    try {
+      progressResult = await getHomeProgress()
+    } catch (e) {
+      progressError = e instanceof Error ? `${e.name}: ${e.message}` : String(e)
+    }
 
     return NextResponse.json({
       status: 'ok',
@@ -29,8 +35,8 @@ export async function GET() {
       questionCount,
       myRecords: recordCount,
       myAnswers: answerCount,
-      totalRecords,
-      totalAnswers,
+      progressError,
+      progressResult,
     })
   } catch (e) {
     return NextResponse.json({
