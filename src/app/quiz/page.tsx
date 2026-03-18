@@ -12,8 +12,8 @@ export default async function QuizPage() {
           <div className="text-4xl mb-4">🎉</div>
           <h1 className="text-xl font-bold mb-2">今日の学習は完了!</h1>
           <p className="text-muted text-sm text-center">
-            解放済みの問題をすべてクリアしました。
-            次の授業で新しい問題が追加されます。
+            全393問をクリア済みです。素晴らしい！
+            復習が必要な問題が出てきたらまた出題されます。
           </p>
         </div>
         <BottomNav />

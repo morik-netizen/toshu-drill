@@ -6,6 +6,7 @@ import { isCorrectAnswer, calculatePoints } from '../scoring'
 import { calculateSM2, evaluateQuality } from '../sm2'
 import type { Quality } from '../types'
 import { redirect } from 'next/navigation'
+import { LESSON_SCHEDULE, getCurrentLesson } from '../lesson-schedule'
 
 // ============================================
 // 型定義 (Server Action用、Date→string変換済み)
@@ -34,6 +35,17 @@ export interface SubmitAnswerResult {
   readonly newStatus: string
 }
 
+export interface LessonProgress {
+  readonly lesson: number
+  readonly date: string
+  readonly title: string
+  readonly type: string
+  readonly isCurrent: boolean
+  readonly totalQuestions: number
+  readonly attempted: number
+  readonly mastered: number
+}
+
 export interface HomeProgress {
   readonly totalUnlocked: number
   readonly attempted: number
@@ -43,6 +55,8 @@ export interface HomeProgress {
   readonly streakDays: number
   readonly recommendedCount: number
   readonly categoryBreakdown: readonly CategoryProgress[]
+  readonly lessonProgress: readonly LessonProgress[]
+  readonly currentLesson: number
 }
 
 export interface CategoryProgress {
@@ -79,11 +93,8 @@ export async function getQuizQuestions(
   const userId = await requireAuth()
   const today = new Date()
 
-  // 1. 解放済みの問題を取得
+  // 1. 全問題を取得（全コンテンツ公開方式）
   const allQuestions = await prisma.question.findMany({
-    where: {
-      unlockDate: { lte: today },
-    },
     orderBy: { id: 'asc' },
   })
 
@@ -245,9 +256,8 @@ export async function getHomeProgress(): Promise<HomeProgress> {
   const userId = await requireAuth()
   const today = new Date()
 
-  // 解放済み問題数
+  // 全問題数（全コンテンツ公開方式）
   const unlockedQuestions = await prisma.question.findMany({
-    where: { unlockDate: { lte: today } },
     select: { id: true, categoryCode: true, categoryName: true },
   })
   const totalUnlocked = unlockedQuestions.length
@@ -332,6 +342,34 @@ export async function getHomeProgress(): Promise<HomeProgress> {
     }))
     .sort((a, b) => a.categoryCode.localeCompare(b.categoryCode))
 
+  // 授業回別進捗
+  const currentLesson = getCurrentLesson(today)
+  const lessonProgress: LessonProgress[] = LESSON_SCHEDULE
+    .filter((l) => l.categoryCodes.length > 0)
+    .map((l) => {
+      let lessonTotal = 0
+      let lessonAttempted = 0
+      let lessonMastered = 0
+      for (const q of unlockedQuestions) {
+        if (l.categoryCodes.includes(q.categoryCode)) {
+          lessonTotal++
+          const record = recordMap.get(q.id)
+          if (record && record.totalAttempts > 0) lessonAttempted++
+          if (record && record.status === 'mastered') lessonMastered++
+        }
+      }
+      return {
+        lesson: l.lesson,
+        date: l.date,
+        title: l.title,
+        type: l.type,
+        isCurrent: l.lesson === currentLesson,
+        totalQuestions: lessonTotal,
+        attempted: lessonAttempted,
+        mastered: lessonMastered,
+      }
+    })
+
   return {
     totalUnlocked,
     attempted,
@@ -341,6 +379,8 @@ export async function getHomeProgress(): Promise<HomeProgress> {
     streakDays,
     recommendedCount,
     categoryBreakdown,
+    lessonProgress,
+    currentLesson,
   }
 }
 

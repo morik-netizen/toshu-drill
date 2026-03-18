@@ -50,32 +50,20 @@ function makeLearningRecord(
 describe('filterUnlockedQuestions', () => {
   const today = new Date('2026-05-01')
 
-  it('unlockDate <= today の問題だけ返す', () => {
+  it('全コンテンツ公開: unlockDateに関わらず全問返す', () => {
     const questions = [
       makeQuestion({ id: 1, unlockDate: new Date('2026-04-16') }),
       makeQuestion({ id: 2, unlockDate: new Date('2026-05-01') }),
-      makeQuestion({ id: 3, unlockDate: new Date('2026-05-08') }), // 未来
+      makeQuestion({ id: 3, unlockDate: new Date('2026-05-08') }),
     ]
     const result = filterUnlockedQuestions(questions, today)
-    expect(result).toHaveLength(2)
-    expect(result.map((q) => q.id)).toEqual([1, 2])
+    expect(result).toHaveLength(3)
+    expect(result.map((q) => q.id)).toEqual([1, 2, 3])
   })
 
-  it('全て未来 → 空配列', () => {
-    const questions = [
-      makeQuestion({ id: 1, unlockDate: new Date('2026-06-01') }),
-    ]
-    const result = filterUnlockedQuestions(questions, today)
+  it('空配列 → 空配列', () => {
+    const result = filterUnlockedQuestions([], today)
     expect(result).toHaveLength(0)
-  })
-
-  it('全て解放済み → 全部返す', () => {
-    const questions = [
-      makeQuestion({ id: 1, unlockDate: new Date('2026-04-01') }),
-      makeQuestion({ id: 2, unlockDate: new Date('2026-04-16') }),
-    ]
-    const result = filterUnlockedQuestions(questions, today)
-    expect(result).toHaveLength(2)
   })
 })
 

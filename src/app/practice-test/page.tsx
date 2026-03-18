@@ -55,26 +55,12 @@ export default async function PracticeTestListPage() {
               </div>
             )}
 
-            {test.isUnlocked ? (
-              <Link
-                href={`/practice-test/${test.quarter}`}
-                className="block w-full py-2.5 bg-primary text-white rounded-lg font-medium text-center text-sm hover:bg-primary-hover transition-colors"
-              >
-                {test.attempts > 0 ? '再挑戦' : 'テスト開始'}
-              </Link>
-            ) : (
-              <div>
-                <p className="text-xs text-muted mb-2">
-                  解放日: {new Date(test.unlockDate).toLocaleDateString('ja-JP')}
-                </p>
-                <button
-                  disabled
-                  className="w-full py-2.5 bg-gray-100 text-muted rounded-lg font-medium text-sm cursor-not-allowed"
-                >
-                  まだ解放されていません
-                </button>
-              </div>
-            )}
+            <Link
+              href={`/practice-test/${test.quarter}`}
+              className="block w-full py-2.5 bg-primary text-white rounded-lg font-medium text-center text-sm hover:bg-primary-hover transition-colors"
+            >
+              {test.attempts > 0 ? '再挑戦' : 'テスト開始'}
+            </Link>
           </div>
         ))}
 

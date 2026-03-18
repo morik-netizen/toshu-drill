@@ -116,13 +116,14 @@ export function calculateProgress(
 }
 
 /**
- * 解放済みの問題をフィルタリングする（授業進度連動）
+ * 全問題を返す（全コンテンツ公開方式）
+ * @deprecated unlockDate による制限は廃止。互換性のため残す。
  */
 export function filterUnlockedQuestions(
   allQuestions: readonly Question[],
-  today: Date
+  _today: Date
 ): readonly Question[] {
-  return allQuestions.filter((q) => q.unlockDate.getTime() <= today.getTime())
+  return allQuestions
 }
 
 /**

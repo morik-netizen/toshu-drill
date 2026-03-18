@@ -65,8 +65,6 @@ const PASSING_RATE = 0.8
 export interface PracticeTestInfo {
   readonly quarter: string
   readonly label: string
-  readonly isUnlocked: boolean
-  readonly unlockDate: string
   readonly bestScore: number | null
   readonly bestTotal: number | null
   readonly bestPassed: boolean | null
@@ -109,7 +107,6 @@ export async function getPracticeTestList(): Promise<
   readonly PracticeTestInfo[]
 > {
   const userId = await requireAuth()
-  const today = new Date()
 
   // ユーザーの過去の受験結果
   const pastTests = await prisma.practiceTest.findMany({
@@ -118,7 +115,6 @@ export async function getPracticeTestList(): Promise<
   })
 
   return QUARTER_CONFIGS.map((config) => {
-    const isUnlocked = today >= new Date(config.unlockDate)
     const testsForQuarter = pastTests.filter(
       (t) => t.quarter === config.quarter
     )
@@ -127,8 +123,6 @@ export async function getPracticeTestList(): Promise<
     return {
       quarter: config.quarter,
       label: config.label,
-      isUnlocked,
-      unlockDate: config.unlockDate,
       bestScore: best?.score ?? null,
       bestTotal: best?.total ?? null,
       bestPassed: best?.passed ?? null,
@@ -149,16 +143,10 @@ export async function getPracticeTestQuestions(
   const config = QUARTER_CONFIGS.find((c) => c.quarter === quarter)
   if (!config) throw new Error(`Invalid quarter: ${quarter}`)
 
-  const today = new Date()
-  if (today < new Date(config.unlockDate)) {
-    throw new Error('This practice test is not yet unlocked')
-  }
-
-  // 対象カテゴリの問題を取得
+  // 対象カテゴリの問題を取得（全コンテンツ公開方式）
   const questions = await prisma.question.findMany({
     where: {
       categoryCode: { in: [...config.categoryCodes] },
-      unlockDate: { lte: today },
     },
   })
 

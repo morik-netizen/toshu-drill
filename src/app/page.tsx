@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import { BottomNav } from '@/components/BottomNav'
 import { getHomeProgress } from '@/lib/actions/quiz'
 import { auth, signOut, isAllowedEmail } from '@/lib/auth'
+import { prisma } from '@/lib/db'
 
 export default async function HomePage() {
   const session = await auth()
@@ -11,6 +12,16 @@ export default async function HomePage() {
   if (session?.user?.email && !isAllowedEmail(session.user.email)) {
     await signOut()
     redirect('/login?error=AccessDenied')
+  }
+
+  // Check if teacher
+  let isTeacher = false
+  if (session?.user?.id) {
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { role: true },
+    })
+    isTeacher = user?.role === 'teacher'
   }
 
   let progress: Awaited<ReturnType<typeof getHomeProgress>> | null = null
@@ -53,6 +64,14 @@ export default async function HomePage() {
               </button>
             </form>
           </div>
+        )}
+        {isTeacher && (
+          <Link
+            href="/dashboard"
+            className="mt-2 block w-full py-2 bg-gray-900 text-white rounded-lg font-medium text-center text-sm hover:bg-gray-800 transition-colors"
+          >
+            教員ダッシュボード
+          </Link>
         )}
       </header>
 
@@ -104,39 +123,56 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* カテゴリ別進捗 */}
+      {/* 授業回別ガイド */}
       <section className="mx-4 mt-4 bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-        <h2 className="text-sm text-muted mb-3">📊 カテゴリ別</h2>
-        {progress && progress.categoryBreakdown.length > 0 ? (
+        <h2 className="text-sm text-muted mb-3">授業回別の進捗</h2>
+        {progress && progress.lessonProgress.length > 0 ? (
           <div className="flex flex-col gap-2">
-            {progress.categoryBreakdown.map((cat) => {
+            {progress.lessonProgress.map((lesson) => {
               const pct =
-                cat.total > 0
-                  ? Math.round((cat.attempted / cat.total) * 100)
+                lesson.totalQuestions > 0
+                  ? Math.round((lesson.attempted / lesson.totalQuestions) * 100)
                   : 0
+              const isComplete = pct === 100
               return (
-                <div key={cat.categoryCode}>
-                  <div className="flex justify-between text-xs mb-1">
-                    <span>
-                      {cat.categoryCode} {cat.categoryName}
+                <div
+                  key={lesson.lesson}
+                  className={`rounded-lg p-3 ${
+                    lesson.isCurrent
+                      ? 'bg-blue-50 border border-primary'
+                      : 'bg-gray-50'
+                  }`}
+                >
+                  <div className="flex justify-between items-center text-xs mb-1">
+                    <span className={`font-medium ${lesson.isCurrent ? 'text-primary' : ''}`}>
+                      {lesson.isCurrent && '>> '}
+                      第{lesson.lesson}回 {lesson.title}
                     </span>
-                    <span className="text-muted">
-                      {cat.attempted}/{cat.total} ({pct}%)
+                    <span className={isComplete ? 'text-green-600 font-medium' : 'text-muted'}>
+                      {lesson.attempted}/{lesson.totalQuestions}
+                      {isComplete && ' ✓'}
                     </span>
                   </div>
-                  <div className="w-full bg-gray-100 rounded-full h-2">
+                  <div className="w-full bg-gray-200 rounded-full h-2">
                     <div
-                      className="bg-primary h-2 rounded-full transition-all"
+                      className={`h-2 rounded-full transition-all ${
+                        isComplete ? 'bg-green-500' : 'bg-primary'
+                      }`}
                       style={{ width: `${pct}%` }}
                     />
                   </div>
+                  {lesson.isCurrent && (
+                    <p className="text-xs text-primary mt-1 font-medium">
+                      今週のおすすめ
+                    </p>
+                  )}
                 </div>
               )
             })}
           </div>
         ) : (
           <p className="text-sm text-muted">
-            学習を開始すると、カテゴリ別の進捗が表示されます
+            学習を開始すると、授業回別の進捗が表示されます
           </p>
         )}
       </section>
