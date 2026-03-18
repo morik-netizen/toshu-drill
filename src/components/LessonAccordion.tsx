@@ -18,38 +18,67 @@ interface Props {
 export function LessonAccordion({ lessons }: Props) {
   const [isOpen, setIsOpen] = useState(false)
 
-  // 現在の授業回のサマリー
   const currentLesson = lessons.find((l) => l.isCurrent)
   const totalAttempted = lessons.reduce((s, l) => s + l.attempted, 0)
   const totalQuestions = lessons.reduce((s, l) => s + l.totalQuestions, 0)
   const overallPct = totalQuestions > 0 ? Math.round((totalAttempted / totalQuestions) * 100) : 0
 
   return (
-    <section className="mx-4 mt-4 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-      {/* ヘッダー（タップで開閉） */}
+    <section className="mx-4 mt-4">
+      {/* カード型ボタン（タップで開閉） */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full px-5 py-4 flex justify-between items-center text-left"
+        className={`w-full rounded-2xl p-5 text-left transition-all active:scale-[0.98] ${
+          isOpen
+            ? 'bg-white shadow-sm border border-gray-100'
+            : 'bg-blue-50 border-2 border-blue-200 shadow-md'
+        }`}
       >
-        <div>
-          <h2 className="text-sm font-medium text-foreground">単元別に学習する</h2>
+        <div className="flex justify-between items-start">
+          <div className="flex items-center gap-2">
+            <span className="text-xl">📚</span>
+            <div>
+              <h2 className="text-sm font-bold text-foreground">単元別に学習する</h2>
+              <span className="text-xs text-muted">{lessons.length}単元</span>
+            </div>
+          </div>
+          <div className={`w-8 h-8 flex items-center justify-center rounded-full transition-all ${
+            isOpen ? 'bg-gray-100 text-gray-500' : 'bg-primary text-white'
+          }`}>
+            <span className={`text-sm transition-transform inline-block ${isOpen ? 'rotate-180' : ''}`}>
+              ▼
+            </span>
+          </div>
+        </div>
+
+        {/* 今週のおすすめ + ミニ進捗バー */}
+        <div className="mt-3">
           {currentLesson && (
-            <p className="text-xs text-primary mt-0.5">
-              今週: 第{currentLesson.lesson === 10 ? '10-12' : currentLesson.lesson}回 {currentLesson.title}
+            <p className="text-xs text-primary font-medium mb-2">
+              今週のおすすめ → 第{currentLesson.lesson === 10 ? '10-12' : currentLesson.lesson}回 {currentLesson.title}
             </p>
           )}
+          <div className="flex items-center gap-3">
+            <div className="flex-1 bg-gray-200 rounded-full h-2.5">
+              <div
+                className="bg-primary h-2.5 rounded-full transition-all"
+                style={{ width: `${overallPct}%` }}
+              />
+            </div>
+            <span className="text-xs font-semibold text-primary shrink-0">{overallPct}%</span>
+          </div>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-muted">{overallPct}%</span>
-          <span className={`text-muted transition-transform ${isOpen ? 'rotate-180' : ''}`}>
-            ▼
-          </span>
-        </div>
+
+        {!isOpen && (
+          <p className="text-xs text-blue-500 mt-3 text-center font-medium">
+            タップして単元を選ぶ
+          </p>
+        )}
       </button>
 
       {/* 展開コンテンツ */}
       {isOpen && (
-        <div className="px-5 pb-4 flex flex-col gap-2">
+        <div className="mt-2 flex flex-col gap-2">
           {lessons.map((lesson) => {
             const pct =
               lesson.totalQuestions > 0
@@ -60,10 +89,10 @@ export function LessonAccordion({ lessons }: Props) {
             return (
               <div
                 key={lesson.lesson}
-                className={`rounded-lg p-3 ${
+                className={`rounded-xl p-3 ${
                   lesson.isCurrent
                     ? 'bg-blue-50 border border-primary'
-                    : 'bg-gray-50'
+                    : 'bg-white border border-gray-100 shadow-sm'
                 }`}
               >
                 <div className="flex justify-between items-center text-xs mb-1">
@@ -86,7 +115,7 @@ export function LessonAccordion({ lessons }: Props) {
                 <div className="mt-2 flex justify-end">
                   <Link
                     href={`/quiz?lesson=${lesson.lesson}`}
-                    className="text-xs px-3 py-1 bg-primary text-white rounded-lg hover:bg-primary-hover active:scale-[0.98] transition-all"
+                    className="text-xs px-3 py-1.5 bg-primary text-white rounded-lg hover:bg-primary-hover active:scale-[0.98] transition-all font-medium"
                   >
                     この回を学習
                   </Link>
