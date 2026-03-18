@@ -1,10 +1,15 @@
-import { signIn } from '@/lib/auth'
+import { redirect } from 'next/navigation'
+import { auth, signIn } from '@/lib/auth'
 
 export default async function LoginPage({
   searchParams,
 }: {
   searchParams: Promise<{ error?: string }>
 }) {
+  // Already logged in → go to home
+  const session = await auth()
+  if (session) redirect('/')
+
   const { error } = await searchParams
 
   return (
@@ -26,7 +31,7 @@ export default async function LoginPage({
         <form
           action={async () => {
             'use server'
-            await signIn('google')
+            await signIn('google', { redirectTo: '/' })
           }}
         >
           <button
