@@ -12,20 +12,18 @@ export interface Lesson {
 }
 
 export const LESSON_SCHEDULE: readonly Lesson[] = [
-  { lesson: 1,  date: '2026-04-16', title: '法の体系・衛生法規の概要', categoryCodes: ['1C', '1B'], type: 'lecture' },
-  { lesson: 2,  date: '2026-04-23', title: '柔道整復師の免許', categoryCodes: ['4A', '4B'], type: 'lecture' },
-  { lesson: 3,  date: '2026-04-30', title: '柔道整復師の業務', categoryCodes: ['4C', '4D'], type: 'lecture' },
+  { lesson: 1,  date: '2026-04-16', title: '法の体系・リスクマネジメント・個人情報保護', categoryCodes: ['1C', '1B', '2A', '2B'], type: 'lecture' },
+  { lesson: 2,  date: '2026-04-23', title: '柔整師の免許', categoryCodes: ['4A', '4B'], type: 'lecture' },
+  { lesson: 3,  date: '2026-04-30', title: '国試と業務範囲', categoryCodes: ['4C', '4D'], type: 'lecture' },
   { lesson: 4,  date: '2026-05-14', title: '施術所', categoryCodes: ['4E'], type: 'lecture' },
   { lesson: 5,  date: '2026-05-21', title: '広告・罰則', categoryCodes: ['4F', '4G'], type: 'lecture' },
-  { lesson: 6,  date: '2026-05-28', title: '医師法・歯科医師法・保健師助産師看護師法', categoryCodes: ['5A', '5B', '5C', '5D', '5E'], type: 'lecture' },
+  { lesson: 6,  date: '2026-05-28', title: '医療資格制度', categoryCodes: ['5A', '5B', '5C', '5D', '5E'], type: 'lecture' },
   { lesson: 7,  date: '2026-06-04', title: '医療法', categoryCodes: ['5F'], type: 'lecture' },
   { lesson: 8,  date: '2026-06-11', title: '社会福祉', categoryCodes: ['3B'], type: 'lecture' },
-  { lesson: 9,  date: '2026-06-18', title: '社会保険', categoryCodes: ['3A'], type: 'lecture' },
+  { lesson: 9,  date: '2026-06-18', title: '社会保険・介護保険', categoryCodes: ['3A', '3C'], type: 'lecture' },
   { lesson: 10, date: '2026-06-25', title: '療養費', categoryCodes: ['3D'], type: 'lecture' },
-  { lesson: 11, date: '2026-07-02', title: '介護保険', categoryCodes: ['3C'], type: 'lecture' },
-  { lesson: 12, date: '2026-07-09', title: '医療安全・個人情報保護', categoryCodes: ['2A', '2B'], type: 'lecture' },
-  { lesson: 13, date: '2026-07-16', title: '総復習', categoryCodes: [], type: 'review' },
-  { lesson: 14, date: '2026-07-23', title: '総復習・試験対策', categoryCodes: [], type: 'review' },
+  { lesson: 13, date: '2026-07-16', title: '練習問題①', categoryCodes: [], type: 'review' },
+  { lesson: 14, date: '2026-07-23', title: '練習問題②', categoryCodes: [], type: 'review' },
   { lesson: 15, date: '2026-07-30', title: '終講試験', categoryCodes: [], type: 'final_exam' },
 ]
 

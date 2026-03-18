@@ -77,10 +77,7 @@ export default async function HomePage() {
 
       {/* 今日の学習 */}
       <section className="mx-4 bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-        <h2 className="text-sm text-muted mb-3">今日の学習</h2>
-        <div className="text-sm text-muted mb-2">
-          おすすめ {progress?.recommendedCount ?? 12}問
-        </div>
+        <h2 className="text-sm text-muted mb-3">全体の進捗</h2>
         <div className="w-full bg-gray-100 rounded-full h-3 mb-2">
           <div
             className="bg-primary h-3 rounded-full transition-all"
@@ -93,9 +90,9 @@ export default async function HomePage() {
         </div>
         <Link
           href="/quiz"
-          className="block w-full py-3 bg-primary text-white rounded-xl font-medium text-center hover:bg-primary-hover active:scale-[0.98] transition-all"
+          className="block w-full py-3 bg-gray-100 text-foreground rounded-xl font-medium text-center hover:bg-gray-200 transition-all text-sm"
         >
-          学習スタート
+          全範囲からおすすめ復習
         </Link>
       </section>
 
@@ -146,7 +143,7 @@ export default async function HomePage() {
                   <div className="flex justify-between items-center text-xs mb-1">
                     <span className={`font-medium ${lesson.isCurrent ? 'text-primary' : ''}`}>
                       {lesson.isCurrent && '>> '}
-                      第{lesson.lesson}回 {lesson.title}
+                      第{lesson.lesson === 10 ? '10-12' : lesson.lesson}回 {lesson.title}
                     </span>
                     <span className={isComplete ? 'text-green-600 font-medium' : 'text-muted'}>
                       {lesson.attempted}/{lesson.totalQuestions}
@@ -161,11 +158,21 @@ export default async function HomePage() {
                       style={{ width: `${pct}%` }}
                     />
                   </div>
-                  {lesson.isCurrent && (
-                    <p className="text-xs text-primary mt-1 font-medium">
-                      今週のおすすめ
-                    </p>
-                  )}
+                  <div className="flex justify-between items-center mt-2">
+                    {lesson.isCurrent ? (
+                      <span className="text-xs text-primary font-medium">
+                        今週のおすすめ
+                      </span>
+                    ) : (
+                      <span />
+                    )}
+                    <Link
+                      href={`/quiz?lesson=${lesson.lesson}`}
+                      className="text-xs px-3 py-1 bg-primary text-white rounded-lg hover:bg-primary-hover active:scale-[0.98] transition-all"
+                    >
+                      この回を学習
+                    </Link>
+                  </div>
                 </div>
               )
             })}

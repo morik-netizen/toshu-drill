@@ -88,13 +88,17 @@ async function requireAuth(): Promise<string> {
 // ============================================
 
 export async function getQuizQuestions(
-  maxQuestions: number = 12
+  maxQuestions: number = 12,
+  categoryCodes?: readonly string[]
 ): Promise<readonly QuestionDTO[]> {
   const userId = await requireAuth()
   const today = new Date()
 
-  // 1. 全問題を取得（全コンテンツ公開方式）
+  // 1. 問題を取得（カテゴリ指定がある場合はフィルタ）
   const allQuestions = await prisma.question.findMany({
+    where: categoryCodes && categoryCodes.length > 0
+      ? { categoryCode: { in: [...categoryCodes] } }
+      : undefined,
     orderBy: { id: 'asc' },
   })
 
