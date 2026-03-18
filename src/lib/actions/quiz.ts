@@ -276,11 +276,6 @@ export async function getHomeProgress(): Promise<HomeProgress> {
   const coverageRate = totalUnlocked > 0 ? attempted / totalUnlocked : 0
 
   // ポイント計算
-  const pointsResult = await prisma.answerHistory.aggregate({
-    where: { userId },
-    _count: { id: true },
-    _sum: {},
-  })
   const correctAnswers = await prisma.answerHistory.count({
     where: { userId, isCorrect: true },
   })

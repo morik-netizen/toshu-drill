@@ -25,10 +25,11 @@ export default async function HomePage() {
   }
 
   let progress: Awaited<ReturnType<typeof getHomeProgress>> | null = null
+  let progressError: string | null = null
   try {
     progress = await getHomeProgress()
-  } catch {
-    // 未ログインまたはDB未接続時はnull
+  } catch (e) {
+    progressError = e instanceof Error ? e.message : String(e)
   }
 
   const coveragePct = progress
@@ -75,7 +76,14 @@ export default async function HomePage() {
         )}
       </header>
 
-      {/* 今日の学習 */}
+      {/* デバッグ: エラー表示（本番前に削除） */}
+      {progressError && (
+        <div className="mx-4 mb-2 p-3 bg-red-50 border border-red-200 rounded-xl text-xs text-red-700">
+          進捗取得エラー: {progressError}
+        </div>
+      )}
+
+      {/* 全体の進捗 */}
       <section className="mx-4 bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
         <h2 className="text-sm text-muted mb-3">全体の進捗</h2>
         <div className="w-full bg-gray-100 rounded-full h-3 mb-2">
