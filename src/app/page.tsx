@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { BottomNav } from '@/components/BottomNav'
+import { LessonAccordion } from '@/components/LessonAccordion'
 import { getHomeProgress } from '@/lib/actions/quiz'
 import { auth, signOut, isAllowedEmail } from '@/lib/auth'
 import { prisma } from '@/lib/db'
@@ -25,11 +26,10 @@ export default async function HomePage() {
   }
 
   let progress: Awaited<ReturnType<typeof getHomeProgress>> | null = null
-  let progressError: string | null = null
   try {
     progress = await getHomeProgress()
-  } catch (e) {
-    progressError = e instanceof Error ? e.message : String(e)
+  } catch {
+    // 未ログインまたはDB未接続時はnull
   }
 
   const coveragePct = progress
@@ -76,13 +76,6 @@ export default async function HomePage() {
         )}
       </header>
 
-      {/* デバッグ: エラー表示（本番前に削除） */}
-      {progressError && (
-        <div className="mx-4 mb-2 p-3 bg-red-50 border border-red-200 rounded-xl text-xs text-red-700">
-          進捗取得エラー: {progressError}
-        </div>
-      )}
-
       {/* 全体の進捗 */}
       <section className="mx-4 bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
         <h2 className="text-sm text-muted mb-3">全体の進捗</h2>
@@ -104,93 +97,25 @@ export default async function HomePage() {
         </Link>
       </section>
 
-      {/* ポイント・定着 */}
-      {progress && progress.attempted > 0 && (
-        <section className="mx-4 mt-4 grid grid-cols-3 gap-3">
-          <div className="bg-white rounded-xl p-3 shadow-sm border border-gray-100 text-center">
-            <div className="text-lg font-bold text-primary">
-              {progress.totalPoints}
-            </div>
-            <div className="text-xs text-muted">ポイント</div>
-          </div>
-          <div className="bg-white rounded-xl p-3 shadow-sm border border-gray-100 text-center">
-            <div className="text-lg font-bold text-success">
-              {progress.mastered}
-            </div>
-            <div className="text-xs text-muted">定着済み</div>
-          </div>
-          <div className="bg-white rounded-xl p-3 shadow-sm border border-gray-100 text-center">
-            <div className="text-lg font-bold text-foreground">
-              {progress.attempted}
-            </div>
-            <div className="text-xs text-muted">挑戦済み</div>
-          </div>
-        </section>
-      )}
-
-      {/* 授業回別ガイド */}
-      <section className="mx-4 mt-4 bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-        <h2 className="text-sm text-muted mb-3">授業回別の進捗</h2>
-        {progress && progress.lessonProgress.length > 0 ? (
-          <div className="flex flex-col gap-2">
-            {progress.lessonProgress.map((lesson) => {
-              const pct =
-                lesson.totalQuestions > 0
-                  ? Math.round((lesson.attempted / lesson.totalQuestions) * 100)
-                  : 0
-              const isComplete = pct === 100
-              return (
-                <div
-                  key={lesson.lesson}
-                  className={`rounded-lg p-3 ${
-                    lesson.isCurrent
-                      ? 'bg-blue-50 border border-primary'
-                      : 'bg-gray-50'
-                  }`}
-                >
-                  <div className="flex justify-between items-center text-xs mb-1">
-                    <span className={`font-medium ${lesson.isCurrent ? 'text-primary' : ''}`}>
-                      {lesson.isCurrent && '>> '}
-                      第{lesson.lesson === 10 ? '10-12' : lesson.lesson}回 {lesson.title}
-                    </span>
-                    <span className={isComplete ? 'text-green-600 font-medium' : 'text-muted'}>
-                      {lesson.attempted}/{lesson.totalQuestions}
-                      {isComplete && ' ✓'}
-                    </span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div
-                      className={`h-2 rounded-full transition-all ${
-                        isComplete ? 'bg-green-500' : 'bg-primary'
-                      }`}
-                      style={{ width: `${pct}%` }}
-                    />
-                  </div>
-                  <div className="flex justify-between items-center mt-2">
-                    {lesson.isCurrent ? (
-                      <span className="text-xs text-primary font-medium">
-                        今週のおすすめ
-                      </span>
-                    ) : (
-                      <span />
-                    )}
-                    <Link
-                      href={`/quiz?lesson=${lesson.lesson}`}
-                      className="text-xs px-3 py-1 bg-primary text-white rounded-lg hover:bg-primary-hover active:scale-[0.98] transition-all"
-                    >
-                      この回を学習
-                    </Link>
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        ) : (
+      {/* 単元別に学習（アコーディオン） */}
+      {progress && progress.lessonProgress.length > 0 ? (
+        <LessonAccordion
+          lessons={progress.lessonProgress.map((l) => ({
+            lesson: l.lesson,
+            title: l.title,
+            isCurrent: l.isCurrent,
+            totalQuestions: l.totalQuestions,
+            attempted: l.attempted,
+          }))}
+        />
+      ) : (
+        <section className="mx-4 mt-4 bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+          <h2 className="text-sm text-muted mb-3">単元別に学習する</h2>
           <p className="text-sm text-muted">
             学習を開始すると、授業回別の進捗が表示されます
           </p>
-        )}
-      </section>
+        </section>
+      )}
 
       {/* 練習テスト */}
       <section className="mx-4 mt-4 mb-4 bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
