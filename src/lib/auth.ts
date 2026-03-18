@@ -3,8 +3,15 @@ import Google from 'next-auth/providers/google'
 import { PrismaAdapter } from '@auth/prisma-adapter'
 import { prisma } from './db'
 
+const ALLOWED_DOMAINS = ['oky.asahi.ac.jp', 'asahi.ac.jp']
+
+export function isAllowedEmail(email: string | null | undefined): boolean {
+  if (!email) return false
+  const domain = email.split('@')[1]?.toLowerCase()
+  return ALLOWED_DOMAINS.includes(domain)
+}
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  debug: true,
   trustHost: true,
   secret: process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET,
   adapter: PrismaAdapter(prisma),
@@ -15,11 +22,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }),
   ],
   callbacks: {
-    signIn() {
-      // Step 1: Simplest possible callback - no async, no params, just return true
-      console.log('[auth] signIn callback reached')
-      return true
-    },
     session({ session, user }) {
       if (session.user) {
         session.user.id = user.id
@@ -29,6 +31,5 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   },
   pages: {
     signIn: '/login',
-    error: '/login',
   },
 })

@@ -1,10 +1,17 @@
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
 import { BottomNav } from '@/components/BottomNav'
 import { getHomeProgress } from '@/lib/actions/quiz'
-import { auth, signOut } from '@/lib/auth'
+import { auth, signOut, isAllowedEmail } from '@/lib/auth'
 
 export default async function HomePage() {
   const session = await auth()
+
+  // Domain restriction: sign out unauthorized users
+  if (session?.user?.email && !isAllowedEmail(session.user.email)) {
+    await signOut()
+    redirect('/login?error=AccessDenied')
+  }
 
   let progress: Awaited<ReturnType<typeof getHomeProgress>> | null = null
   try {

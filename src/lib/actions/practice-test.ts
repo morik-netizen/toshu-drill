@@ -1,7 +1,7 @@
 'use server'
 
 import { prisma } from '../db'
-import { auth } from '../auth'
+import { auth, isAllowedEmail, signOut } from '../auth'
 import { isCorrectAnswer, calculatePoints } from '../scoring'
 import { redirect } from 'next/navigation'
 import type { QuestionDTO } from './quiz'
@@ -93,6 +93,10 @@ async function requireAuth(): Promise<string> {
   const session = await auth()
   if (!session?.user?.id) {
     redirect('/login')
+  }
+  if (!isAllowedEmail(session.user.email)) {
+    await signOut()
+    redirect('/login?error=AccessDenied')
   }
   return session.user.id
 }
