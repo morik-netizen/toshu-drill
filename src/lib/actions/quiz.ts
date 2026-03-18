@@ -409,9 +409,9 @@ export async function getMistakes(): Promise<
     orderBy: { updatedAt: 'desc' },
   })
 
-  // correctCount < totalAttempts = 間違えたことがある
+  // 間違えたことがあり、かつ直近3回連続正解していない問題
   return records
-    .filter((r) => r.correctCount < r.totalAttempts)
+    .filter((r) => r.correctCount < r.totalAttempts && r.repetitions < 3)
     .map((r) => ({
       questionId: r.questionId,
       categoryCode: r.question.categoryCode,
