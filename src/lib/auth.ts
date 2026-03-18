@@ -22,6 +22,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }),
   ],
   callbacks: {
+    signIn({ user, account, profile }) {
+      if (account?.provider === 'google') {
+        const email = (profile as { email?: string })?.email ?? user.email
+        if (!isAllowedEmail(email)) {
+          return '/login?error=AccessDenied'
+        }
+      }
+      return true
+    },
     session({ session, user }) {
       if (session.user) {
         session.user.id = user.id
