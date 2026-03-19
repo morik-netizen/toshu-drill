@@ -25,7 +25,7 @@ export default async function ProgressPage() {
             .filter((e) => e.isCurrentUser)
             .map((me) => (
               <div
-                key={me.userId}
+                key={me.rank}
                 className="bg-primary text-white rounded-xl p-4 flex items-center gap-4"
               >
                 <div className="text-2xl font-bold w-10 text-center">
@@ -57,7 +57,7 @@ export default async function ProgressPage() {
 
               return (
                 <div
-                  key={entry.userId}
+                  key={entry.rank}
                   className={`flex items-center gap-3 px-4 py-3 ${
                     i < data.entries.length - 1 ? 'border-b border-gray-50' : ''
                   } ${entry.isCurrentUser ? 'bg-blue-50' : ''}`}

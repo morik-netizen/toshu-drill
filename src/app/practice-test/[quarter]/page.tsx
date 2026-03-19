@@ -24,7 +24,8 @@ export default async function PracticeTestPage({ params }: Props) {
   try {
     questions = await getPracticeTestQuestions(quarter)
   } catch (e) {
-    error = e instanceof Error ? e.message : 'エラーが発生しました'
+    console.error('Practice test error:', e)
+    error = 'テストの読み込みに失敗しました。もう一度お試しください。'
   }
 
   if (error) {

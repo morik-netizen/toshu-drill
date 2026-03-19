@@ -10,7 +10,6 @@ import { redirect } from 'next/navigation'
 
 export interface LeaderboardEntry {
   readonly rank: number
-  readonly userId: string
   readonly name: string
   readonly totalAttempted: number
   readonly totalMastered: number
@@ -69,8 +68,8 @@ export async function getLeaderboard(): Promise<LeaderboardData> {
     const coverageRate = totalQuestions > 0 ? attempted / totalQuestions : 0
 
     return {
-      userId: s.id,
-      name: s.name ?? s.email?.split('@')[0] ?? '(名前未設定)',
+      id: s.id,
+      name: s.name ?? `匿名 #${students.indexOf(s) + 1}`,
       totalAttempted: attempted,
       totalMastered: mastered,
       coverageRate,
@@ -87,10 +86,17 @@ export async function getLeaderboard(): Promise<LeaderboardData> {
 
   const entries: LeaderboardEntry[] = sorted.map((s, i) => {
     const rank = i + 1
-    const isCurrentUser = s.userId === currentUserId
+    const isCurrentUser = s.id === currentUserId
     if (isCurrentUser) currentUserRank = rank
 
-    return { rank, ...s, isCurrentUser }
+    return {
+      rank,
+      name: s.name,
+      totalAttempted: s.totalAttempted,
+      totalMastered: s.totalMastered,
+      coverageRate: s.coverageRate,
+      isCurrentUser,
+    }
   })
 
   // 教員がリーダーボードを見た場合（ランク外）

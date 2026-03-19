@@ -178,6 +178,26 @@ export async function submitPracticeTest(
   answers: readonly { questionId: number; selectedAnswer: string }[],
   startedAt: string
 ): Promise<PracticeTestSubmitResult> {
+  // 入力バリデーション
+  if (!['Q1', 'Q2', 'Q3', 'Q4'].includes(quarter)) {
+    throw new Error('不正なリクエストです')
+  }
+  if (!Array.isArray(answers) || answers.length === 0 || answers.length > 60) {
+    throw new Error('不正なリクエストです')
+  }
+  for (const a of answers) {
+    if (!Number.isInteger(a.questionId) || a.questionId <= 0) {
+      throw new Error('不正なリクエストです')
+    }
+    if (!/^[A-D](,[A-D])*$/.test(a.selectedAnswer)) {
+      throw new Error('不正なリクエストです')
+    }
+  }
+  const parsedStartedAt = new Date(startedAt)
+  if (isNaN(parsedStartedAt.getTime())) {
+    throw new Error('不正なリクエストです')
+  }
+
   const userId = await requireAuth()
 
   // 問題を取得
@@ -237,7 +257,7 @@ export async function submitPracticeTest(
       score,
       total,
       passed,
-      startedAt: new Date(startedAt),
+      startedAt: parsedStartedAt,
       completedAt: new Date(),
     },
   })

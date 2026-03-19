@@ -172,6 +172,17 @@ export async function submitAnswer(
   selectedAnswer: string,
   responseTimeMs: number
 ): Promise<SubmitAnswerResult> {
+  // 入力バリデーション
+  if (!Number.isInteger(questionId) || questionId <= 0) {
+    throw new Error('不正なリクエストです')
+  }
+  if (!/^[A-D](,[A-D])*$/.test(selectedAnswer)) {
+    throw new Error('不正なリクエストです')
+  }
+  if (!Number.isFinite(responseTimeMs) || responseTimeMs < 0 || responseTimeMs > 600_000) {
+    throw new Error('不正なリクエストです')
+  }
+
   const userId = await requireAuth()
 
   // 1. 問題を取得
