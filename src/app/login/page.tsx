@@ -15,9 +15,9 @@ export default async function LoginPage({
   return (
     <main className="min-h-screen flex flex-col items-center justify-center px-4">
       <div className="w-full max-w-sm text-center">
-        <h1 className="text-3xl font-bold mb-2">関係法規マスター</h1>
+        <h1 className="text-3xl font-bold mb-2">徒手療法ドリル</h1>
         <p className="text-muted text-sm mb-8">
-          柔道整復師国試 関係法規 393問を完全制覇
+          徒手療法論の練習問題 229問を完全制覇
         </p>
 
         {error && (
@@ -36,7 +36,7 @@ export default async function LoginPage({
         >
           <button
             type="submit"
-            className="w-full flex items-center justify-center gap-3 py-3 px-4 bg-white border-2 border-gray-200 rounded-xl font-medium hover:border-primary hover:bg-blue-50 transition-all"
+            className="w-full flex items-center justify-center gap-3 py-3 px-4 bg-white border-2 border-gray-200 rounded-xl font-medium hover:border-primary hover:bg-emerald-50 transition-all"
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24">
               <path

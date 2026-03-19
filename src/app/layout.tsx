@@ -13,14 +13,14 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  applicationName: '関係法規マスター',
-  title: { default: '関係法規マスター', template: '%s | 関係法規マスター' },
-  description: '柔道整復師国試 関係法規393問を完全制覇する学習アプリ',
+  applicationName: '徒手療法ドリル',
+  title: { default: '徒手療法ドリル', template: '%s | 徒手療法ドリル' },
+  description: '徒手療法論の練習問題学習アプリ',
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
-    title: '関係法規マスター',
+    title: '徒手療法ドリル',
   },
   icons: {
     apple: '/apple-touch-icon.png',
@@ -33,7 +33,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
-  themeColor: '#2563eb',
+  themeColor: '#0d9488',
 }
 
 export default function RootLayout({

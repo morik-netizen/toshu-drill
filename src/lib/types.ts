@@ -1,17 +1,17 @@
 // ============================================
-// 関係法規マスター - Core Types
+// 徒手療法ドリル - Core Types
 // ============================================
 
 /** 問題カテゴリ */
 export interface Category {
   readonly code: string       // '1C', '2A', '4B' etc.
   readonly name: string       // '患者の権利' etc.
-  readonly unlockDate: Date   // 授業進度連動の解放日
 }
 
 /** 問題 */
 export interface Question {
   readonly id: number
+  readonly questionType: 'four_choice' | 'true_false'
   readonly categoryCode: string
   readonly categoryName: string
   readonly questionText: string
@@ -23,7 +23,6 @@ export interface Question {
   readonly correctFeedback: string
   readonly incorrectFeedback: string
   readonly similarityGroup: number | null
-  readonly unlockDate: Date
 }
 
 /** 学習記録の状態 */
@@ -93,17 +92,15 @@ export interface AnswerResult {
   readonly sm2Update: SM2Output
 }
 
-/** 練習テスト */
-export interface PracticeTest {
-  readonly quarter: 'Q1' | 'Q2' | 'Q3' | 'Q4'
+/** 模擬テスト */
+export interface MockTest {
   readonly questions: readonly Question[]
-  readonly totalQuestions: number     // 40
-  readonly passingScore: number      // 0.8
+  readonly totalQuestions: number     // 25
+  readonly passingScore: number      // 0.6
 }
 
-/** 練習テスト結果 */
-export interface PracticeTestResult {
-  readonly quarter: string
+/** 模擬テスト結果 */
+export interface MockTestResult {
   readonly score: number
   readonly total: number
   readonly passed: boolean
@@ -121,7 +118,6 @@ export interface UserProgress {
   readonly attempted: number          // 挑戦済み
   readonly mastered: number           // 定着済み
   readonly coverageRate: number       // カバー率 (0-1)
-  readonly totalPoints: number
   readonly streakDays: number         // 今週の学習日数
   readonly recommendedDaily: number   // 今日の推奨問題数
 }

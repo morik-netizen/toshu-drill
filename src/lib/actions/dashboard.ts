@@ -3,7 +3,6 @@
 import { prisma } from '../db'
 import { auth, isAllowedEmail, signOut } from '../auth'
 import { redirect } from 'next/navigation'
-import { LESSON_SCHEDULE } from '../lesson-schedule'
 
 // ============================================
 // 型定義
@@ -18,14 +17,6 @@ export interface StudentSummary {
   readonly coverageRate: number
   readonly lastActiveAt: Date | null
   readonly isActive: boolean // 7日以内に学習
-}
-
-export interface LessonOverview {
-  readonly lesson: number
-  readonly title: string
-  readonly totalQuestions: number
-  readonly avgAttemptedRate: number // 全学生平均のカバー率
-  readonly avgCorrectRate: number  // 全学生平均の正答率
 }
 
 export interface PracticeTestOverview {
@@ -67,7 +58,6 @@ export interface DashboardData {
   readonly activeStudents: number
   readonly totalQuestions: number
   readonly students: readonly StudentSummary[]
-  readonly lessonOverview: readonly LessonOverview[]
   readonly practiceTests: readonly PracticeTestOverview[]
   readonly weakCategories: readonly WeakCategory[]
   readonly hardQuestions: readonly HardQuestion[]
@@ -171,75 +161,26 @@ export async function getDashboardData(): Promise<DashboardData> {
 
   const activeStudents = students.filter((s) => s.isActive).length
 
-  // ---- 授業回別の全体達成状況 ----
-  const studentIds = new Set(allUsers.map((u) => u.id))
-  const studentCount = studentIds.size
+  // ---- 模擬テスト合格状況 ----
+  const allMockTests = await prisma.mockTest.findMany()
 
-  const lessonOverview: LessonOverview[] = LESSON_SCHEDULE
-    .filter((l) => l.categoryCodes.length > 0)
-    .map((l) => {
-      const lessonQuestionIds = allQuestions
-        .filter((q) => l.categoryCodes.includes(q.categoryCode))
-        .map((q) => q.id)
-      const lessonTotal = lessonQuestionIds.length
+  const uniqueMockStudents = new Set(allMockTests.map((t) => t.userId)).size
+  const mockPassCount = new Set(
+    allMockTests.filter((t) => t.passed).map((t) => t.userId)
+  ).size
+  const mockAvgScore = allMockTests.length > 0
+    ? allMockTests.reduce((sum, t) => sum + t.score, 0) / allMockTests.length
+    : 0
 
-      if (lessonTotal === 0 || studentCount === 0) {
-        return { lesson: l.lesson, title: l.title, totalQuestions: 0, avgAttemptedRate: 0, avgCorrectRate: 0 }
-      }
-
-      let sumAttemptedRate = 0
-      let sumCorrectRate = 0
-
-      for (const uid of studentIds) {
-        const userRecords = recordsByUser.get(uid) ?? []
-        const relevant = userRecords.filter((r) => lessonQuestionIds.includes(r.questionId))
-        const attempted = relevant.filter((r) => r.totalAttempts > 0).length
-        const correctSum = relevant.reduce((sum, r) => sum + r.correctCount, 0)
-        const attemptsSum = relevant.reduce((sum, r) => sum + r.totalAttempts, 0)
-
-        sumAttemptedRate += attempted / lessonTotal
-        sumCorrectRate += attemptsSum > 0 ? correctSum / attemptsSum : 0
-      }
-
-      return {
-        lesson: l.lesson,
-        title: l.title,
-        totalQuestions: lessonTotal,
-        avgAttemptedRate: sumAttemptedRate / studentCount,
-        avgCorrectRate: sumCorrectRate / studentCount,
-      }
-    })
-
-  // ---- 練習テスト合格状況 ----
-  const practiceTestConfigs = [
-    { quarter: 'Q1', label: '第1回〜第4回' },
-    { quarter: 'Q2', label: '第5回〜第7回' },
-    { quarter: 'Q3', label: '第8回〜第11回' },
-    { quarter: 'Q4', label: '総合テスト' },
-  ]
-
-  const allPracticeTests = await prisma.practiceTest.findMany()
-
-  const practiceTests: PracticeTestOverview[] = practiceTestConfigs.map((config) => {
-    const tests = allPracticeTests.filter((t) => t.quarter === config.quarter)
-    const uniqueStudents = new Set(tests.map((t) => t.userId)).size
-    const passCount = new Set(
-      tests.filter((t) => t.passed).map((t) => t.userId)
-    ).size
-    const avgScore = tests.length > 0
-      ? tests.reduce((sum, t) => sum + t.score, 0) / tests.length
-      : 0
-
-    return {
-      quarter: config.quarter,
-      label: config.label,
-      totalAttempts: tests.length,
-      uniqueStudents,
-      passCount,
-      passRate: uniqueStudents > 0 ? passCount / uniqueStudents : 0,
-      avgScore,
-    }
-  })
+  const practiceTests: PracticeTestOverview[] = [{
+    quarter: 'mock',
+    label: '模擬テスト',
+    totalAttempts: allMockTests.length,
+    uniqueStudents: uniqueMockStudents,
+    passCount: mockPassCount,
+    passRate: uniqueMockStudents > 0 ? mockPassCount / uniqueMockStudents : 0,
+    avgScore: mockAvgScore,
+  }]
 
   // ---- 正答率が低いカテゴリ ----
   const categoryStats = new Map<string, { name: string; total: number; correct: number }>()
@@ -313,7 +254,6 @@ export async function getDashboardData(): Promise<DashboardData> {
     activeStudents,
     totalQuestions,
     students: students.sort((a, b) => b.coverageRate - a.coverageRate),
-    lessonOverview,
     practiceTests,
     weakCategories,
     hardQuestions,

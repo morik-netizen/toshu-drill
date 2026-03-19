@@ -1,5 +1,4 @@
 import {
-  filterUnlockedQuestions,
   selectQuestions,
   calculateRecommendedDaily,
   calculateProgress,
@@ -23,7 +22,7 @@ function makeQuestion(overrides: Partial<Question> & { id: number }): Question {
     correctFeedback: '正解',
     incorrectFeedback: '不正解',
     similarityGroup: null,
-    unlockDate: new Date('2026-04-16'),
+    questionType: 'four_choice' as const,
     ...overrides,
   }
 }
@@ -43,29 +42,6 @@ function makeLearningRecord(
     ...overrides,
   }
 }
-
-// ============================================
-// filterUnlockedQuestions
-// ============================================
-describe('filterUnlockedQuestions', () => {
-  const today = new Date('2026-05-01')
-
-  it('全コンテンツ公開: unlockDateに関わらず全問返す', () => {
-    const questions = [
-      makeQuestion({ id: 1, unlockDate: new Date('2026-04-16') }),
-      makeQuestion({ id: 2, unlockDate: new Date('2026-05-01') }),
-      makeQuestion({ id: 3, unlockDate: new Date('2026-05-08') }),
-    ]
-    const result = filterUnlockedQuestions(questions, today)
-    expect(result).toHaveLength(3)
-    expect(result.map((q) => q.id)).toEqual([1, 2, 3])
-  })
-
-  it('空配列 → 空配列', () => {
-    const result = filterUnlockedQuestions([], today)
-    expect(result).toHaveLength(0)
-  })
-})
 
 // ============================================
 // selectQuestions
@@ -184,7 +160,6 @@ describe('calculateProgress', () => {
     expect(progress.attempted).toBe(3)
     expect(progress.mastered).toBe(1)
     expect(progress.coverageRate).toBeCloseTo(0.03, 2) // 3/100
-    expect(progress.totalPoints).toBe(50)
     expect(progress.streakDays).toBe(3)
   })
 

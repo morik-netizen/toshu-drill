@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useRef } from 'react'
 import { QuizCard } from '@/components/QuizCard'
+import { MaruBatsuCard } from '@/components/MaruBatsuCard'
 import { ResultCard } from '@/components/ResultCard'
 import { SessionComplete } from '@/components/SessionComplete'
 import { submitAnswer } from '@/lib/actions/quiz'
@@ -26,9 +27,9 @@ interface SessionState {
 function toQuestion(dto: QuestionDTO): Question {
   return {
     ...dto,
+    questionType: dto.questionType as Question['questionType'],
     correctFeedback: dto.correctFeedback ?? '',
     incorrectFeedback: dto.incorrectFeedback ?? '',
-    unlockDate: new Date(),
   }
 }
 
@@ -163,13 +164,23 @@ export function QuizSession({ questions }: QuizSessionProps) {
       </div>
 
       {session.phase === 'answering' && currentQuestion && (
-        <QuizCard
-          key={currentQuestion.id}
-          question={currentQuestion}
-          current={session.currentIndex + 1}
-          total={questions.length}
-          onAnswer={handleAnswer}
-        />
+        currentQuestion.questionType === 'true_false' ? (
+          <MaruBatsuCard
+            key={currentQuestion.id}
+            question={currentQuestion}
+            current={session.currentIndex + 1}
+            total={questions.length}
+            onAnswer={handleAnswer}
+          />
+        ) : (
+          <QuizCard
+            key={currentQuestion.id}
+            question={currentQuestion}
+            current={session.currentIndex + 1}
+            total={questions.length}
+            onAnswer={handleAnswer}
+          />
+        )
       )}
 
       {submitting && (
@@ -178,12 +189,13 @@ export function QuizSession({ questions }: QuizSessionProps) {
         </div>
       )}
 
-      {session.phase === 'result' && lastResult && lastAnswer && (
+      {session.phase === 'result' && lastResult && lastAnswer && currentQuestion && (
         <ResultCard
           result={lastResult}
           selectedAnswer={lastAnswer}
           onNext={handleNext}
           isLast={session.currentIndex + 1 >= questions.length}
+          questionType={currentQuestion.questionType}
         />
       )}
     </>

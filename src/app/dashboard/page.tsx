@@ -20,7 +20,7 @@ export default async function DashboardPage() {
         <header className="px-4 pt-6 pb-2 flex justify-between items-start">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">教員ダッシュボード</h1>
-            <p className="text-sm text-gray-500 mt-0.5">関係法規マスター</p>
+            <p className="text-sm text-gray-500 mt-0.5">徒手療法ドリル</p>
           </div>
           <Link
             href="/"
@@ -36,7 +36,7 @@ export default async function DashboardPage() {
             icon="👥"
             value={data.totalStudents}
             label="登録学生数"
-            color="blue"
+            color="emerald"
           />
           <KpiCard
             icon="⚡"
@@ -49,7 +49,7 @@ export default async function DashboardPage() {
             icon="📝"
             value={data.totalQuestions}
             label="総問題数"
-            color="blue"
+            color="emerald"
           />
           <KpiCard
             icon="📈"
@@ -124,60 +124,6 @@ export default async function DashboardPage() {
           </div>
         </section>
 
-        {/* 授業回別達成状況 */}
-        <section className="px-4 mt-6">
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-            <div className="px-5 py-4 border-b border-gray-100">
-              <h2 className="text-base font-semibold text-gray-900">授業回別の達成状況</h2>
-              <p className="text-xs text-gray-500 mt-0.5">全学生平均 / カバー率と正答率</p>
-            </div>
-            <div className="p-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {data.lessonOverview.map((l) => {
-                const attemptPct = Math.round(l.avgAttemptedRate * 100)
-                const correctPct = Math.round(l.avgCorrectRate * 100)
-                return (
-                  <div key={l.lesson} className="rounded-lg border border-gray-100 p-4 hover:border-gray-200 transition-colors">
-                    <div className="flex justify-between items-start mb-3">
-                      <div>
-                        <span className="text-xs font-medium text-primary bg-blue-50 px-2 py-0.5 rounded">
-                          第{l.lesson}回
-                        </span>
-                        <div className="text-sm font-medium text-gray-900 mt-1">{l.title}</div>
-                      </div>
-                      <span className="text-xs text-gray-400">{l.totalQuestions}問</span>
-                    </div>
-                    <div className="space-y-2">
-                      <div>
-                        <div className="flex justify-between text-xs mb-1">
-                          <span className="text-gray-500">カバー率</span>
-                          <span className="font-medium text-gray-700">{attemptPct}%</span>
-                        </div>
-                        <div className="w-full bg-gray-100 rounded-full h-2">
-                          <div className="bg-blue-500 h-2 rounded-full transition-all" style={{ width: `${attemptPct}%` }} />
-                        </div>
-                      </div>
-                      <div>
-                        <div className="flex justify-between text-xs mb-1">
-                          <span className="text-gray-500">正答率</span>
-                          <span className={`font-medium ${correctPct >= 80 ? 'text-green-600' : correctPct >= 60 ? 'text-amber-600' : 'text-red-600'}`}>
-                            {correctPct}%
-                          </span>
-                        </div>
-                        <div className="w-full bg-gray-100 rounded-full h-2">
-                          <div
-                            className={`h-2 rounded-full transition-all ${correctPct >= 80 ? 'bg-green-500' : correctPct >= 60 ? 'bg-amber-500' : 'bg-red-500'}`}
-                            style={{ width: `${correctPct}%` }}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          </div>
-        </section>
-
         {/* 練習テスト合格状況 */}
         <section className="px-4 mt-6">
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
@@ -193,7 +139,7 @@ export default async function DashboardPage() {
                     <div
                       className="absolute inset-0 opacity-5"
                       style={{
-                        background: `conic-gradient(#3B82F6 ${passRate}%, transparent ${passRate}%)`,
+                        background: `conic-gradient(#10B981 ${passRate}%, transparent ${passRate}%)`,
                       }}
                     />
                     <div className="relative">
@@ -320,7 +266,7 @@ export default async function DashboardPage() {
                         </span>
                         <div className="flex-1 bg-gray-100 rounded-full h-5 relative overflow-hidden">
                           <div
-                            className="bg-blue-500 h-5 rounded-full transition-all flex items-center"
+                            className="bg-emerald-500 h-5 rounded-full transition-all flex items-center"
                             style={{ width: `${Math.max(barWidth, 2)}%` }}
                           >
                             {barWidth > 30 && (
@@ -363,16 +309,16 @@ function KpiCard({
   readonly value: string | number
   readonly label: string
   readonly sub?: string
-  readonly color: 'blue' | 'green' | 'amber' | 'red'
+  readonly color: 'emerald' | 'green' | 'amber' | 'red'
 }) {
   const colorMap = {
-    blue: 'bg-blue-50 border-blue-100 text-blue-700',
+    emerald: 'bg-emerald-50 border-emerald-100 text-emerald-700',
     green: 'bg-green-50 border-green-100 text-green-700',
     amber: 'bg-amber-50 border-amber-100 text-amber-700',
     red: 'bg-red-50 border-red-100 text-red-700',
   }
   const valueColorMap = {
-    blue: 'text-blue-700',
+    emerald: 'text-emerald-700',
     green: 'text-green-700',
     amber: 'text-amber-700',
     red: 'text-red-700',
@@ -435,7 +381,7 @@ function StudentRow({
     ? { text: '要フォロー', class: 'bg-amber-100 text-amber-700' }
     : pct >= 80
     ? { text: '順調', class: 'bg-green-100 text-green-700' }
-    : { text: '学習中', class: 'bg-blue-100 text-blue-700' }
+    : { text: '学習中', class: 'bg-emerald-100 text-emerald-700' }
 
   return (
     <tr className="hover:bg-gray-50 transition-colors">
@@ -456,7 +402,7 @@ function StudentRow({
         <div className="flex items-center gap-2">
           <div className="w-16 bg-gray-100 rounded-full h-2">
             <div
-              className={`h-2 rounded-full transition-all ${pct >= 80 ? 'bg-green-500' : pct >= 50 ? 'bg-blue-500' : 'bg-gray-400'}`}
+              className={`h-2 rounded-full transition-all ${pct >= 80 ? 'bg-green-500' : pct >= 50 ? 'bg-emerald-500' : 'bg-gray-400'}`}
               style={{ width: `${pct}%` }}
             />
           </div>

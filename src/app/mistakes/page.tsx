@@ -32,7 +32,7 @@ export default async function MistakesPage() {
               className="bg-white rounded-xl p-4 shadow-sm border border-gray-100"
             >
               <div className="flex justify-between items-start mb-2">
-                <span className="text-xs bg-blue-50 text-primary px-2 py-0.5 rounded">
+                <span className="text-xs bg-emerald-50 text-primary px-2 py-0.5 rounded">
                   {m.categoryCode} {m.categoryName}
                 </span>
                 <span className="text-xs text-muted">

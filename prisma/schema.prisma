@@ -59,41 +59,37 @@ model User {
   email         String?   @unique
   emailVerified DateTime?
   image         String?
-  nickname      String?   @db.VarChar(50)
   role          String    @default("student") @db.VarChar(10)
-  course        String?   @db.VarChar(10)
-  dailyGoal     Int       @default(10)
-  notifyFreq    String    @default("daily") @db.VarChar(10)
   createdAt     DateTime  @default(now())
 
   accounts        Account[]
   sessions        Session[]
   learningRecords LearningRecord[]
   answerHistory   AnswerHistory[]
-  practiceTests   PracticeTest[]
+  mockTests       MockTest[]
 
   @@map("users")
 }
 
 model Question {
   id               Int      @id @default(autoincrement())
+  questionType     String   @default("four_choice") @db.VarChar(20)
   categoryCode     String   @db.VarChar(10)
   categoryName     String   @db.VarChar(100)
   questionText     String   @db.Text
   choiceA          String   @db.Text
   choiceB          String   @db.Text
-  choiceC          String   @db.Text
-  choiceD          String   @db.Text
+  choiceC          String   @default("") @db.Text
+  choiceD          String   @default("") @db.Text
   correctAnswers   String   @db.VarChar(10)
   correctFeedback  String?  @db.Text
   incorrectFeedback String? @db.Text
   similarityGroup  Int?
-  unlockDate       DateTime @db.Date
 
   learningRecords LearningRecord[]
   answerHistory   AnswerHistory[]
 
-  @@index([unlockDate], map: "idx_questions_unlock")
+  @@index([questionType], map: "idx_questions_type")
   @@index([categoryCode], map: "idx_questions_category")
   @@index([similarityGroup], map: "idx_questions_similarity")
   @@map("questions")
@@ -144,25 +140,16 @@ model AnswerHistory {
   @@map("answer_history")
 }
 
-model PracticeTest {
+model MockTest {
   id          Int       @id @default(autoincrement())
   userId      String
-  quarter     String    @db.VarChar(2)
   score       Int
-  total       Int       @default(40)
+  total       Int       @default(25)
   passed      Boolean
   startedAt   DateTime
   completedAt DateTime?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@map("practice_tests")
-}
-
-model DailyChallenge {
-  id            Int      @id @default(autoincrement())
-  challengeDate DateTime @unique @db.Date
-  questionIds   Int[]
-
-  @@map("daily_challenges")
+  @@map("mock_tests")
 }

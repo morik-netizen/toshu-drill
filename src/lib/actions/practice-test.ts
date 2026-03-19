@@ -2,76 +2,31 @@
 
 import { prisma } from '../db'
 import { auth, isAllowedEmail, signOut } from '../auth'
-import { isCorrectAnswer, calculatePoints } from '../scoring'
+import { isCorrectAnswer } from '../scoring'
 import { redirect } from 'next/navigation'
 import type { QuestionDTO } from './quiz'
 
 // ============================================
-// 練習テスト設定
+// 模擬テスト設定
 // ============================================
 
-interface QuarterConfig {
-  readonly quarter: 'Q1' | 'Q2' | 'Q3' | 'Q4'
-  readonly label: string
-  readonly unlockDate: string // ISO date
-  readonly categoryCodes: readonly string[]
-}
-
-const QUARTER_CONFIGS: readonly QuarterConfig[] = [
-  {
-    quarter: 'Q1',
-    label: '第1回〜第4回 (法の体系・免許・業務・施術所)',
-    unlockDate: '2026-05-14',
-    categoryCodes: ['1C', '1B', '4A', '4B', '4C', '4D', '4E'],
-  },
-  {
-    quarter: 'Q2',
-    label: '第5回〜第7回 (広告・罰則・医師法・医療法)',
-    unlockDate: '2026-06-04',
-    categoryCodes: [
-      '1C', '1B', '4A', '4B', '4C', '4D', '4E',
-      '4F', '4G', '5A', '5B', '5C', '5D', '5E', '5F',
-    ],
-  },
-  {
-    quarter: 'Q3',
-    label: '第8回〜第11回 (社会福祉・保険・療養費)',
-    unlockDate: '2026-07-02',
-    categoryCodes: [
-      '1C', '1B', '4A', '4B', '4C', '4D', '4E',
-      '4F', '4G', '5A', '5B', '5C', '5D', '5E', '5F',
-      '3B', '3A', '3D', '3C',
-    ],
-  },
-  {
-    quarter: 'Q4',
-    label: '総合テスト (全カテゴリ)',
-    unlockDate: '2026-07-09',
-    categoryCodes: [
-      '1C', '1B', '4A', '4B', '4C', '4D', '4E',
-      '4F', '4G', '5A', '5B', '5C', '5D', '5E', '5F',
-      '3B', '3A', '3D', '3C', '2A', '2B',
-    ],
-  },
-]
-
-const TOTAL_QUESTIONS = 40
-const PASSING_RATE = 0.8
+const TOTAL_QUESTIONS = 25
+const PASSING_RATE = 0.6
 
 // ============================================
 // 型定義
 // ============================================
 
-export interface PracticeTestInfo {
-  readonly quarter: string
-  readonly label: string
-  readonly bestScore: number | null
-  readonly bestTotal: number | null
-  readonly bestPassed: boolean | null
-  readonly attempts: number
+export interface MockTestResult {
+  readonly id: number
+  readonly score: number
+  readonly total: number
+  readonly passed: boolean
+  readonly startedAt: string
+  readonly completedAt: string | null
 }
 
-export interface PracticeTestSubmitResult {
+export interface MockTestSubmitResult {
   readonly score: number
   readonly total: number
   readonly passed: boolean
@@ -100,61 +55,22 @@ async function requireAuth(): Promise<string> {
 }
 
 // ============================================
-// 練習テスト一覧を取得
+// 模擬テスト問題を取得 (全問題から25問ランダム)
 // ============================================
 
-export async function getPracticeTestList(): Promise<
-  readonly PracticeTestInfo[]
-> {
-  const userId = await requireAuth()
-
-  // ユーザーの過去の受験結果
-  const pastTests = await prisma.practiceTest.findMany({
-    where: { userId },
-    orderBy: { score: 'desc' },
-  })
-
-  return QUARTER_CONFIGS.map((config) => {
-    const testsForQuarter = pastTests.filter(
-      (t) => t.quarter === config.quarter
-    )
-    const best = testsForQuarter[0] ?? null
-
-    return {
-      quarter: config.quarter,
-      label: config.label,
-      bestScore: best?.score ?? null,
-      bestTotal: best?.total ?? null,
-      bestPassed: best?.passed ?? null,
-      attempts: testsForQuarter.length,
-    }
-  })
-}
-
-// ============================================
-// 練習テスト問題を取得 (カテゴリ比率に応じて40問)
-// ============================================
-
-export async function getPracticeTestQuestions(
-  quarter: string
-): Promise<readonly QuestionDTO[]> {
+export async function getMockTestQuestions(): Promise<readonly QuestionDTO[]> {
   await requireAuth()
 
-  const config = QUARTER_CONFIGS.find((c) => c.quarter === quarter)
-  if (!config) throw new Error(`Invalid quarter: ${quarter}`)
+  // 全問題を取得
+  const allQuestions = await prisma.question.findMany()
 
-  // 対象カテゴリの問題を取得（全コンテンツ公開方式）
-  const questions = await prisma.question.findMany({
-    where: {
-      categoryCode: { in: [...config.categoryCodes] },
-    },
-  })
-
-  // カテゴリ比率に応じてランダム抽出
-  const selected = selectByRatio(questions, TOTAL_QUESTIONS)
+  // ランダムに25問抽出
+  const shuffled = [...allQuestions].sort(() => Math.random() - 0.5)
+  const selected = shuffled.slice(0, TOTAL_QUESTIONS)
 
   return selected.map((q) => ({
     id: q.id,
+    questionType: q.questionType,
     categoryCode: q.categoryCode,
     categoryName: q.categoryName,
     questionText: q.questionText,
@@ -170,19 +86,15 @@ export async function getPracticeTestQuestions(
 }
 
 // ============================================
-// 練習テスト回答を一括送信
+// 模擬テスト回答を一括送信
 // ============================================
 
-export async function submitPracticeTest(
-  quarter: string,
+export async function submitMockTest(
   answers: readonly { questionId: number; selectedAnswer: string }[],
   startedAt: string
-): Promise<PracticeTestSubmitResult> {
+): Promise<MockTestSubmitResult> {
   // 入力バリデーション
-  if (!['Q1', 'Q2', 'Q3', 'Q4'].includes(quarter)) {
-    throw new Error('不正なリクエストです')
-  }
-  if (!Array.isArray(answers) || answers.length === 0 || answers.length > 60) {
+  if (!Array.isArray(answers) || answers.length === 0 || answers.length > 30) {
     throw new Error('不正なリクエストです')
   }
   for (const a of answers) {
@@ -241,7 +153,7 @@ export async function submitPracticeTest(
         selectedAnswer: answer.selectedAnswer,
         isCorrect: correct,
         quality: correct ? 4 : 1,
-        sessionType: 'practice_test',
+        sessionType: 'mock_test',
       },
     })
   }
@@ -249,11 +161,10 @@ export async function submitPracticeTest(
   const total = answers.length
   const passed = total > 0 && score / total >= PASSING_RATE
 
-  // 練習テスト結果を保存
-  await prisma.practiceTest.create({
+  // 模擬テスト結果を保存
+  await prisma.mockTest.create({
     data: {
       userId,
-      quarter,
       score,
       total,
       passed,
@@ -275,46 +186,23 @@ export async function submitPracticeTest(
 }
 
 // ============================================
-// ヘルパー: カテゴリ比率に応じて抽出
+// 模擬テスト履歴を取得
 // ============================================
 
-function selectByRatio<
-  T extends { categoryCode: string },
->(items: T[], target: number): T[] {
-  if (items.length <= target) return [...items]
+export async function getMockTestHistory(): Promise<readonly MockTestResult[]> {
+  const userId = await requireAuth()
 
-  // カテゴリごとにグループ化
-  const byCategory = new Map<string, T[]>()
-  for (const item of items) {
-    const arr = byCategory.get(item.categoryCode) ?? []
-    byCategory.set(item.categoryCode, [...arr, item])
-  }
+  const tests = await prisma.mockTest.findMany({
+    where: { userId },
+    orderBy: { startedAt: 'desc' },
+  })
 
-  const result: T[] = []
-  const totalAvailable = items.length
-
-  // 比率に応じて各カテゴリから抽出
-  for (const [, questions] of byCategory) {
-    const ratio = questions.length / totalAvailable
-    const count = Math.max(1, Math.round(ratio * target))
-    const shuffled = [...questions].sort(() => Math.random() - 0.5)
-    result.push(...shuffled.slice(0, count))
-  }
-
-  // 端数調整
-  while (result.length > target) result.pop()
-
-  if (result.length < target) {
-    const remaining = items.filter(
-      (item) => !result.includes(item)
-    )
-    const shuffled = [...remaining].sort(() => Math.random() - 0.5)
-    for (const item of shuffled) {
-      if (result.length >= target) break
-      result.push(item)
-    }
-  }
-
-  // シャッフル
-  return result.sort(() => Math.random() - 0.5)
+  return tests.map((t) => ({
+    id: t.id,
+    score: t.score,
+    total: t.total,
+    passed: t.passed,
+    startedAt: t.startedAt.toISOString(),
+    completedAt: t.completedAt?.toISOString() ?? null,
+  }))
 }

@@ -109,29 +109,17 @@ export function calculateProgress(
     attempted,
     mastered,
     coverageRate,
-    totalPoints,
     streakDays: weeklyActiveDays,
     recommendedDaily,
   }
 }
 
 /**
- * 全問題を返す（全コンテンツ公開方式）
- * @deprecated unlockDate による制限は廃止。互換性のため残す。
- */
-export function filterUnlockedQuestions(
-  allQuestions: readonly Question[],
-  _today: Date
-): readonly Question[] {
-  return allQuestions
-}
-
-/**
- * 練習テスト用に問題をカテゴリ比率に応じて抽出する
+ * 模擬テスト用に問題をランダムに抽出する（デフォルト25問）
  */
 export function selectPracticeTestQuestions(
   availableQuestions: readonly Question[],
-  totalQuestions: number
+  totalQuestions: number = 25
 ): readonly Question[] {
   if (availableQuestions.length <= totalQuestions) {
     return availableQuestions

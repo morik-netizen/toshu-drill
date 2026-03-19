@@ -1,11 +1,11 @@
 {
-  "name": "関係法規マスター",
-  "short_name": "法規マスター",
-  "description": "柔道整復師国試 関係法規の学習アプリ",
+  "name": "徒手療法ドリル",
+  "short_name": "徒手療法ドリル",
+  "description": "徒手療法論の練習問題学習アプリ",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#f8fafc",
-  "theme_color": "#2563eb",
+  "theme_color": "#0d9488",
   "orientation": "portrait",
   "icons": [
     {

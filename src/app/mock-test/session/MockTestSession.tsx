@@ -2,14 +2,14 @@
 
 import { useState, useCallback, useRef } from 'react'
 import { QuizCard } from '@/components/QuizCard'
-import { submitPracticeTest } from '@/lib/actions/practice-test'
+import { MaruBatsuCard } from '@/components/MaruBatsuCard'
+import { submitMockTest } from '@/lib/actions/practice-test'
 import type { QuestionDTO } from '@/lib/actions/quiz'
-import type { PracticeTestSubmitResult } from '@/lib/actions/practice-test'
+import type { MockTestSubmitResult } from '@/lib/actions/practice-test'
 import type { Question } from '@/lib/types'
 import Link from 'next/link'
 
 interface Props {
-  readonly quarter: string
   readonly questions: readonly QuestionDTO[]
 }
 
@@ -24,19 +24,19 @@ interface TestState {
 function toQuestion(dto: QuestionDTO): Question {
   return {
     ...dto,
+    questionType: dto.questionType as Question['questionType'],
     correctFeedback: dto.correctFeedback ?? '',
     incorrectFeedback: dto.incorrectFeedback ?? '',
-    unlockDate: new Date(),
   }
 }
 
-export function PracticeTestSession({ quarter, questions }: Props) {
+export function MockTestSession({ questions }: Props) {
   const [state, setState] = useState<TestState>({
     phase: 'answering',
     currentIndex: 0,
     answers: [],
   })
-  const [result, setResult] = useState<PracticeTestSubmitResult | null>(null)
+  const [result, setResult] = useState<MockTestSubmitResult | null>(null)
   const startedAt = useRef(new Date().toISOString())
 
   const currentDTO = questions[state.currentIndex]
@@ -61,7 +61,7 @@ export function PracticeTestSession({ quarter, questions }: Props) {
           answers: newAnswers,
         }))
 
-        submitPracticeTest(quarter, newAnswers, startedAt.current)
+        submitMockTest(newAnswers, startedAt.current)
           .then((res) => {
             setResult(res)
             setState((prev) => ({ ...prev, phase: 'result' }))
@@ -81,7 +81,7 @@ export function PracticeTestSession({ quarter, questions }: Props) {
             setResult({
               score,
               total: newAnswers.length,
-              passed: score / newAnswers.length >= 0.8,
+              passed: newAnswers.length > 0 && score / newAnswers.length >= 0.6,
               categoryBreakdown: [],
             })
             setState((prev) => ({ ...prev, phase: 'result' }))
@@ -94,7 +94,7 @@ export function PracticeTestSession({ quarter, questions }: Props) {
         }))
       }
     },
-    [currentDTO, state.answers, state.currentIndex, questions, quarter]
+    [currentDTO, state.answers, state.currentIndex, questions]
   )
 
   // ============================================
@@ -137,7 +137,7 @@ export function PracticeTestSession({ quarter, questions }: Props) {
             {result.passed ? '合格!' : '不合格'}
           </div>
           <div className="text-muted text-sm mt-2">
-            {quarter} 練習テスト
+            模擬試験
           </div>
         </div>
 
@@ -155,7 +155,7 @@ export function PracticeTestSession({ quarter, questions }: Props) {
               <div className="text-xs text-muted mt-1">正答率</div>
             </div>
             <div>
-              <div className="text-2xl font-bold text-muted">80%</div>
+              <div className="text-2xl font-bold text-muted">60%</div>
               <div className="text-xs text-muted mt-1">合格ライン</div>
             </div>
           </div>
@@ -179,7 +179,7 @@ export function PracticeTestSession({ quarter, questions }: Props) {
                       </span>
                       <span
                         className={
-                          catPct >= 80 ? 'text-success' : 'text-error'
+                          catPct >= 60 ? 'text-success' : 'text-error'
                         }
                       >
                         {cat.correct}/{cat.total} ({catPct}%)
@@ -188,7 +188,7 @@ export function PracticeTestSession({ quarter, questions }: Props) {
                     <div className="w-full bg-gray-100 rounded-full h-2">
                       <div
                         className={`h-2 rounded-full transition-all ${
-                          catPct >= 80 ? 'bg-success' : 'bg-error'
+                          catPct >= 60 ? 'bg-success' : 'bg-error'
                         }`}
                         style={{ width: `${catPct}%` }}
                       />
@@ -203,16 +203,16 @@ export function PracticeTestSession({ quarter, questions }: Props) {
         {/* アクション */}
         <div className="flex flex-col gap-3">
           <Link
-            href={`/practice-test/${quarter}`}
+            href="/mock-test/session"
             className="w-full py-3 bg-primary text-white rounded-xl font-medium text-center hover:bg-primary-hover transition-colors"
           >
             もう一度受験
           </Link>
           <Link
-            href="/practice-test"
+            href="/mock-test"
             className="w-full py-3 bg-gray-100 text-foreground rounded-xl font-medium text-center hover:bg-gray-200 transition-colors"
           >
-            テスト一覧に戻る
+            模擬試験トップに戻る
           </Link>
         </div>
       </div>
@@ -226,7 +226,7 @@ export function PracticeTestSession({ quarter, questions }: Props) {
     <>
       {/* ヘッダー */}
       <div className="flex justify-between items-center px-4 py-2 text-xs text-muted">
-        <span>{quarter} 練習テスト</span>
+        <span>模擬試験</span>
         <span>
           残り{' '}
           {questions.length - state.currentIndex - 1}問
@@ -244,13 +244,23 @@ export function PracticeTestSession({ quarter, questions }: Props) {
       </div>
 
       {currentQuestion && (
-        <QuizCard
-          key={currentQuestion.id}
-          question={currentQuestion}
-          current={state.currentIndex + 1}
-          total={questions.length}
-          onAnswer={handleAnswer}
-        />
+        currentQuestion.questionType === 'true_false' ? (
+          <MaruBatsuCard
+            key={currentQuestion.id}
+            question={currentQuestion}
+            current={state.currentIndex + 1}
+            total={questions.length}
+            onAnswer={handleAnswer}
+          />
+        ) : (
+          <QuizCard
+            key={currentQuestion.id}
+            question={currentQuestion}
+            current={state.currentIndex + 1}
+            total={questions.length}
+            onAnswer={handleAnswer}
+          />
+        )
       )}
     </>
   )

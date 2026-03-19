@@ -71,7 +71,7 @@ export function QuizCard({
         <span>
           問題 {current}/{total}
         </span>
-        <span className="bg-blue-50 text-primary px-2 py-0.5 rounded text-xs font-medium">
+        <span className="bg-emerald-50 text-primary px-2 py-0.5 rounded text-xs font-medium">
           {question.categoryCode} {question.categoryName}
         </span>
       </div>
@@ -97,10 +97,10 @@ export function QuizCard({
               disabled={submitted}
               className={`w-full text-left p-4 rounded-xl border-2 transition-all ${
                 isSelected
-                  ? 'border-primary bg-blue-50'
+                  ? 'border-primary bg-emerald-50'
                   : submitted
                     ? 'border-gray-200 bg-gray-50 opacity-60'
-                    : 'border-gray-200 bg-white hover:border-primary hover:bg-blue-50 active:scale-[0.98]'
+                    : 'border-gray-200 bg-white hover:border-primary hover:bg-emerald-50 active:scale-[0.98]'
               }`}
             >
               <span className="font-semibold text-primary mr-2">{label}</span>

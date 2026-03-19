@@ -42,6 +42,7 @@
   ],
   "exclude": [
     "node_modules",
-    "prisma/seed.ts"
+    "prisma/seed.ts",
+    "src/lib/__tests__"
   ]
 }

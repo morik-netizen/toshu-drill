@@ -6,7 +6,6 @@ import { isCorrectAnswer, calculatePoints } from '../scoring'
 import { calculateSM2, evaluateQuality } from '../sm2'
 import type { Quality } from '../types'
 import { redirect } from 'next/navigation'
-import { LESSON_SCHEDULE, getCurrentLesson } from '../lesson-schedule'
 
 // ============================================
 // 型定義 (Server Action用、Date→string変換済み)
@@ -14,6 +13,7 @@ import { LESSON_SCHEDULE, getCurrentLesson } from '../lesson-schedule'
 
 export interface QuestionDTO {
   readonly id: number
+  readonly questionType: string
   readonly categoryCode: string
   readonly categoryName: string
   readonly questionText: string
@@ -35,17 +35,6 @@ export interface SubmitAnswerResult {
   readonly newStatus: string
 }
 
-export interface LessonProgress {
-  readonly lesson: number
-  readonly date: string
-  readonly title: string
-  readonly type: string
-  readonly isCurrent: boolean
-  readonly totalQuestions: number
-  readonly attempted: number
-  readonly mastered: number
-}
-
 export interface HomeProgress {
   readonly totalUnlocked: number
   readonly attempted: number
@@ -57,8 +46,6 @@ export interface HomeProgress {
   readonly reviewDueCount: number
   readonly unattemptedCount: number
   readonly categoryBreakdown: readonly CategoryProgress[]
-  readonly lessonProgress: readonly LessonProgress[]
-  readonly currentLesson: number
 }
 
 export interface CategoryProgress {
@@ -149,6 +136,7 @@ export async function getQuizQuestions(
   // 7. DTO変換 (Date除去)
   return selected.map((q) => ({
     id: q.id,
+    questionType: q.questionType,
     categoryCode: q.categoryCode,
     categoryName: q.categoryName,
     questionText: q.questionText,
@@ -354,34 +342,6 @@ export async function getHomeProgress(): Promise<HomeProgress> {
     }))
     .sort((a, b) => a.categoryCode.localeCompare(b.categoryCode))
 
-  // 授業回別進捗
-  const currentLesson = getCurrentLesson(today)
-  const lessonProgress: LessonProgress[] = LESSON_SCHEDULE
-    .filter((l) => l.categoryCodes.length > 0)
-    .map((l) => {
-      let lessonTotal = 0
-      let lessonAttempted = 0
-      let lessonMastered = 0
-      for (const q of unlockedQuestions) {
-        if (l.categoryCodes.includes(q.categoryCode)) {
-          lessonTotal++
-          const record = recordMap.get(q.id)
-          if (record && record.totalAttempts > 0) lessonAttempted++
-          if (record && record.status === 'mastered') lessonMastered++
-        }
-      }
-      return {
-        lesson: l.lesson,
-        date: l.date,
-        title: l.title,
-        type: l.type,
-        isCurrent: l.lesson === currentLesson,
-        totalQuestions: lessonTotal,
-        attempted: lessonAttempted,
-        mastered: lessonMastered,
-      }
-    })
-
   return {
     totalUnlocked,
     attempted,
@@ -393,8 +353,6 @@ export async function getHomeProgress(): Promise<HomeProgress> {
     reviewDueCount,
     unattemptedCount,
     categoryBreakdown,
-    lessonProgress,
-    currentLesson,
   }
 }
 

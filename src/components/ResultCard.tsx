@@ -7,6 +7,15 @@ interface ResultCardProps {
   readonly selectedAnswer: string
   readonly onNext: () => void
   readonly isLast: boolean
+  readonly questionType?: 'four_choice' | 'true_false'
+}
+
+function formatAnswer(answer: string, questionType?: 'four_choice' | 'true_false'): string {
+  if (questionType === 'true_false') {
+    if (answer === 'A') return '○'
+    if (answer === 'B') return '×'
+  }
+  return answer
 }
 
 export function ResultCard({
@@ -14,6 +23,7 @@ export function ResultCard({
   selectedAnswer,
   onNext,
   isLast,
+  questionType,
 }: ResultCardProps) {
   return (
     <div className="flex flex-col gap-4 p-4">
@@ -42,15 +52,15 @@ export function ResultCard({
       {!result.isCorrect && (
         <div className="bg-gray-50 rounded-xl p-4 text-sm">
           <div className="text-muted mb-1">あなたの回答</div>
-          <div className="font-medium text-error mb-3">{selectedAnswer}</div>
+          <div className="font-medium text-error mb-3">{formatAnswer(selectedAnswer, questionType)}</div>
           <div className="text-muted mb-1">正解</div>
           <div className="font-medium text-success">
-            {result.correctAnswers}
+            {formatAnswer(result.correctAnswers, questionType)}
           </div>
         </div>
       )}
 
-      <div className="bg-blue-50 rounded-xl p-4">
+      <div className="bg-emerald-50 rounded-xl p-4">
         <div className="text-sm font-medium text-primary mb-2">解説</div>
         <p className="text-sm leading-relaxed">{result.feedback}</p>
       </div>
