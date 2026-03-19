@@ -8,7 +8,7 @@ export default async function LoginPage({
 }) {
   // Already logged in → go to home
   const session = await auth()
-  if (session) redirect('/')
+  if (session?.user) redirect('/')
 
   const { error } = await searchParams
 
