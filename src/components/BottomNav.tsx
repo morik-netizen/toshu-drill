@@ -8,6 +8,7 @@ const tabs = [
   { href: '/quiz', label: '学習', icon: '📝' },
   { href: '/mistakes', label: '間違いノート', icon: '📖' },
   { href: '/progress', label: '進捗', icon: '📊' },
+  { href: '/lectures', label: 'ノート', icon: '📓' },
 ] as const
 
 export function BottomNav() {

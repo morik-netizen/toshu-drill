@@ -67,6 +67,7 @@ model User {
   learningRecords LearningRecord[]
   answerHistory   AnswerHistory[]
   mockTests       MockTest[]
+  lecturePhotos   LecturePhoto[]
 
   @@map("users")
 }
@@ -152,4 +153,20 @@ model MockTest {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("mock_tests")
+}
+
+model LecturePhoto {
+  id        String   @id @default(cuid())
+  userId    String
+  unitId    String   @db.VarChar(3)
+  slotId    String   @db.VarChar(50)
+  s3Key     String   @db.VarChar(255)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, unitId, slotId])
+  @@index([userId, unitId], map: "idx_lp_user_unit")
+  @@map("lecture_photos")
 }
