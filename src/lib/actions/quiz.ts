@@ -54,6 +54,8 @@ export interface HomeProgress {
   readonly totalPoints: number
   readonly streakDays: number
   readonly recommendedCount: number
+  readonly reviewDueCount: number
+  readonly unattemptedCount: number
   readonly categoryBreakdown: readonly CategoryProgress[]
   readonly lessonProgress: readonly LessonProgress[]
   readonly currentLesson: number
@@ -377,6 +379,8 @@ export async function getHomeProgress(): Promise<HomeProgress> {
     totalPoints,
     streakDays,
     recommendedCount,
+    reviewDueCount,
+    unattemptedCount,
     categoryBreakdown,
     lessonProgress,
     currentLesson,

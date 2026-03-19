@@ -76,24 +76,43 @@ export default async function HomePage() {
         )}
       </header>
 
-      {/* 全体の進捗 */}
+      {/* 今日の学習 */}
       <section className="mx-4 bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-        <h2 className="text-sm text-muted mb-3">全体の進捗</h2>
+        <div className="flex items-center gap-2 mb-3">
+          <span className="text-xl">🎯</span>
+          <h2 className="text-sm font-bold text-foreground">今日の学習</h2>
+        </div>
         <div className="w-full bg-gray-100 rounded-full h-3 mb-2">
           <div
             className="bg-primary h-3 rounded-full transition-all"
             style={{ width: `${coveragePct}%` }}
           />
         </div>
-        <div className="text-xs text-muted mb-4">
+        <div className="text-xs text-muted mb-3">
           {progress?.attempted ?? 0}/{progress?.totalUnlocked ?? 0}問 クリア済み
           (カバー率 {coveragePct}%)
         </div>
+        {progress && (
+          <div className="flex gap-3 mb-4">
+            <div className="flex-1 bg-blue-50 rounded-lg p-2 text-center">
+              <div className="text-lg font-bold text-primary">{Math.min(progress.reviewDueCount, progress.recommendedCount)}</div>
+              <div className="text-xs text-muted">復習</div>
+            </div>
+            <div className="flex-1 bg-green-50 rounded-lg p-2 text-center">
+              <div className="text-lg font-bold text-green-600">{Math.max(0, progress.recommendedCount - Math.min(progress.reviewDueCount, progress.recommendedCount))}</div>
+              <div className="text-xs text-muted">未挑戦</div>
+            </div>
+            <div className="flex-1 bg-orange-50 rounded-lg p-2 text-center">
+              <div className="text-lg font-bold text-orange-600">{progress.recommendedCount}</div>
+              <div className="text-xs text-muted">合計</div>
+            </div>
+          </div>
+        )}
         <Link
           href="/quiz"
-          className="block w-full py-3 bg-gray-100 text-foreground rounded-xl font-medium text-center hover:bg-gray-200 transition-all text-sm"
+          className="block w-full py-3 bg-primary text-white rounded-xl font-medium text-center hover:bg-primary-hover active:scale-[0.98] transition-all"
         >
-          全範囲からおすすめ復習
+          おすすめ{progress?.recommendedCount ?? 12}問を始める →
         </Link>
       </section>
 
