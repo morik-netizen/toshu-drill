@@ -3,21 +3,22 @@ import { redirect } from 'next/navigation'
 import { auth } from '@/lib/auth'
 import { BottomNav } from '@/components/BottomNav'
 import { getPhotoCompletionCounts } from '@/lib/actions/lectures'
+import { LECTURE_UNITS } from '@/lib/lecture-content'
 
-const UNITS = [
-  { code: 'U01', name: '理論', icon: '📖' },
-  { code: 'U02', name: '足関節', icon: '🦶' },
-  { code: 'U03', name: '足部・足趾', icon: '🦶' },
-  { code: 'U04', name: '膝・股関節', icon: '🦵' },
-  { code: 'U05', name: '仙腸関節1', icon: '🦴' },
-  { code: 'U06', name: '仙腸関節2', icon: '🦴' },
-  { code: 'U07', name: '骨盤1', icon: '🦴' },
-  { code: 'U08', name: '骨盤2', icon: '🦴' },
-  { code: 'U09', name: '腰椎', icon: '🦴' },
-  { code: 'U10', name: '肩関節', icon: '💪' },
-  { code: 'U11', name: '肘関節', icon: '💪' },
-  { code: 'U12', name: '手関節と指', icon: '✋' },
-] as const
+const UNIT_ICONS: Record<string, string> = {
+  U01: '📖',
+  U02: '🦶',
+  U03: '🦶',
+  U04: '🦵',
+  U05: '🦴',
+  U06: '🦴',
+  U07: '🦴',
+  U08: '🦴',
+  U09: '🦴',
+  U10: '💪',
+  U11: '💪',
+  U12: '✋',
+}
 
 export default async function LecturesPage() {
   const session = await auth()
@@ -38,26 +39,34 @@ export default async function LecturesPage() {
 
       <section className="mx-4">
         <div className="grid grid-cols-2 gap-2">
-          {UNITS.map((unit) => {
-            const counts = completionCounts.get(unit.code)
+          {LECTURE_UNITS.map((unit) => {
+            const photoSlotCount = unit.sections.filter(
+              (s) => s.photoSlot !== undefined,
+            ).length
+            const total = photoSlotCount > 0 ? photoSlotCount : 0
+            const counts = completionCounts.get(unit.unitId)
             const filled = counts?.filled ?? 0
-            const total = counts?.total ?? 6
+            const icon = UNIT_ICONS[unit.unitId] ?? '📄'
             return (
               <Link
-                key={unit.code}
-                href={`/lectures/${unit.code}`}
+                key={unit.unitId}
+                href={`/lectures/${unit.unitId}`}
                 className="flex items-center gap-2 p-3 rounded-xl border border-gray-100 bg-white shadow-sm hover:border-emerald-300 hover:bg-emerald-50 transition-colors"
               >
-                <span className="text-lg">{unit.icon}</span>
+                <span className="text-lg">{icon}</span>
                 <div className="flex-1 min-w-0">
                   <div className="text-xs font-medium truncate">
-                    {unit.name}
+                    {unit.title}
                   </div>
-                  <div className="text-xs text-muted">
-                    {filled}/{total}枚
-                  </div>
+                  {total > 0 ? (
+                    <div className="text-xs text-muted">
+                      {filled}/{total}枚
+                    </div>
+                  ) : (
+                    <div className="text-xs text-muted">準備中</div>
+                  )}
                 </div>
-                {filled > 0 && (
+                {total > 0 && filled > 0 && (
                   <span className="text-xs font-bold text-emerald-600">
                     {Math.round((filled / total) * 100)}%
                   </span>

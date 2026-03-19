@@ -5,31 +5,7 @@ import { BottomNav } from '@/components/BottomNav'
 import { getUserPhotosForUnit } from '@/lib/actions/lectures'
 import { LectureSection } from '@/components/LectureSection'
 import { PhotoSlot } from '@/components/PhotoSlot'
-
-const UNITS = [
-  { code: 'U01', name: '理論' },
-  { code: 'U02', name: '足関節' },
-  { code: 'U03', name: '足部・足趾' },
-  { code: 'U04', name: '膝・股関節' },
-  { code: 'U05', name: '仙腸関節1' },
-  { code: 'U06', name: '仙腸関節2' },
-  { code: 'U07', name: '骨盤1' },
-  { code: 'U08', name: '骨盤2' },
-  { code: 'U09', name: '腰椎' },
-  { code: 'U10', name: '肩関節' },
-  { code: 'U11', name: '肘関節' },
-  { code: 'U12', name: '手関節と指' },
-] as const
-
-// Default photo slots for units without specific content yet
-const DEFAULT_SLOTS = [
-  { slotId: 'slot-1', label: '写真 1' },
-  { slotId: 'slot-2', label: '写真 2' },
-  { slotId: 'slot-3', label: '写真 3' },
-  { slotId: 'slot-4', label: '写真 4' },
-  { slotId: 'slot-5', label: '写真 5' },
-  { slotId: 'slot-6', label: '写真 6' },
-]
+import { LECTURE_UNITS } from '@/lib/lecture-content'
 
 export default async function LectureDetailPage({
   params,
@@ -42,13 +18,15 @@ export default async function LectureDetailPage({
   }
 
   const { unitId } = await params
-  const unit = UNITS.find((u) => u.code === unitId)
+  const unit = LECTURE_UNITS.find((u) => u.unitId === unitId)
   if (!unit) {
     notFound()
   }
 
   const photos = await getUserPhotosForUnit(unitId)
   const photoBySlot = new Map(photos.map((p) => [p.slotId, p]))
+
+  const hasSections = unit.sections.length > 0
 
   return (
     <main className="min-h-screen pb-20 max-w-lg mx-auto">
@@ -61,24 +39,27 @@ export default async function LectureDetailPage({
           &larr; 講義ノート一覧
         </Link>
         <h1 className="text-xl font-bold mt-1">
-          {unit.code} {unit.name}
+          {unit.unitId} {unit.title}
         </h1>
+        {unit.subtitle && (
+          <p className="text-xs text-gray-500 mt-0.5">{unit.subtitle}</p>
+        )}
       </header>
 
       {/* Unit navigation pills */}
       <nav className="px-4 pb-4 overflow-x-auto">
         <div className="flex gap-1 min-w-max">
-          {UNITS.map((u) => (
+          {LECTURE_UNITS.map((u) => (
             <Link
-              key={u.code}
-              href={`/lectures/${u.code}`}
+              key={u.unitId}
+              href={`/lectures/${u.unitId}`}
               className={`px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap transition-colors ${
-                u.code === unitId
+                u.unitId === unitId
                   ? 'bg-emerald-600 text-white'
                   : 'bg-gray-100 text-gray-600 hover:bg-emerald-50 hover:text-emerald-700'
               }`}
             >
-              {u.code}
+              {u.unitId}
             </Link>
           ))}
         </div>
@@ -86,30 +67,46 @@ export default async function LectureDetailPage({
 
       {/* Content */}
       <section className="mx-4 space-y-3">
-        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-center">
-          <p className="text-sm text-amber-700">講義コンテンツ準備中</p>
-          <p className="text-xs text-amber-600 mt-1">
-            下の写真スロットに講義中の写真を記録できます
-          </p>
-        </div>
-
-        <LectureSection title="講義写真" defaultOpen>
-          <div className="grid grid-cols-2 gap-3">
-            {DEFAULT_SLOTS.map((slot) => {
-              const existing = photoBySlot.get(slot.slotId)
-              return (
-                <PhotoSlot
-                  key={slot.slotId}
-                  slotId={slot.slotId}
-                  unitId={unitId}
-                  label={slot.label}
-                  existingPhotoUrl={existing?.downloadUrl}
-                  existingPhotoId={existing?.id}
-                />
-              )
-            })}
+        {!hasSections && (
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-center">
+            <p className="text-sm text-amber-700">コンテンツ準備中</p>
           </div>
-        </LectureSection>
+        )}
+
+        {hasSections &&
+          unit.sections.map((sec, idx) => {
+            const existing = sec.photoSlot
+              ? photoBySlot.get(sec.photoSlot.slotId)
+              : undefined
+
+            return (
+              <LectureSection
+                key={`${unit.unitId}-sec-${idx}`}
+                title={sec.title}
+                defaultOpen={idx === 0}
+              >
+                <div
+                  className="prose prose-sm max-w-none
+                    [&_table]:w-full [&_table]:text-xs [&_table]:border-collapse
+                    [&_th]:bg-emerald-50 [&_th]:px-2 [&_th]:py-1 [&_th]:border [&_th]:border-gray-200 [&_th]:text-left
+                    [&_td]:px-2 [&_td]:py-1 [&_td]:border [&_td]:border-gray-200
+                    [&_ul]:pl-5 [&_ol]:pl-5 [&_li]:mb-1"
+                  dangerouslySetInnerHTML={{ __html: sec.content }}
+                />
+                {sec.photoSlot && (
+                  <div className="mt-3">
+                    <PhotoSlot
+                      slotId={sec.photoSlot.slotId}
+                      unitId={unitId}
+                      label={sec.photoSlot.label}
+                      existingPhotoUrl={existing?.downloadUrl}
+                      existingPhotoId={existing?.id}
+                    />
+                  </div>
+                )}
+              </LectureSection>
+            )
+          })}
       </section>
 
       <BottomNav />
