@@ -8,8 +8,13 @@ import { prisma } from '@/lib/db'
 export default async function HomePage() {
   const session = await auth()
 
+  // Redirect to login if not authenticated
+  if (!session?.user) {
+    redirect('/login')
+  }
+
   // Domain restriction: sign out unauthorized users
-  if (session?.user?.email && !isAllowedEmail(session.user.email)) {
+  if (session.user.email && !isAllowedEmail(session.user.email)) {
     await signOut()
     redirect('/login?error=AccessDenied')
   }
