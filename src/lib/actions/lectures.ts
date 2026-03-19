@@ -45,11 +45,11 @@ export type PhotoCompletionCount = {
 const DEFAULT_SLOTS_PER_UNIT = 6
 
 export async function getPhotoCompletionCounts(): Promise<
-  Map<string, PhotoCompletionCount>
+  Record<string, PhotoCompletionCount>
 > {
   const session = await auth()
   if (!session?.user?.id) {
-    return new Map()
+    return {}
   }
 
   const photos = await prisma.lecturePhoto.findMany({
@@ -57,18 +57,18 @@ export async function getPhotoCompletionCounts(): Promise<
     select: { unitId: true },
   })
 
-  const countByUnit = new Map<string, number>()
+  const countByUnit: Record<string, number> = {}
   for (const photo of photos) {
-    countByUnit.set(photo.unitId, (countByUnit.get(photo.unitId) ?? 0) + 1)
+    countByUnit[photo.unitId] = (countByUnit[photo.unitId] ?? 0) + 1
   }
 
-  const result = new Map<string, PhotoCompletionCount>()
+  const result: Record<string, PhotoCompletionCount> = {}
   for (let i = 1; i <= 12; i++) {
     const unitId = `U${String(i).padStart(2, '0')}`
-    result.set(unitId, {
-      filled: countByUnit.get(unitId) ?? 0,
+    result[unitId] = {
+      filled: countByUnit[unitId] ?? 0,
       total: DEFAULT_SLOTS_PER_UNIT,
-    })
+    }
   }
 
   return result

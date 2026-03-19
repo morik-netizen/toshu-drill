@@ -44,7 +44,7 @@ export default async function LecturesPage() {
               (s) => s.photoSlot !== undefined,
             ).length
             const total = photoSlotCount > 0 ? photoSlotCount : 0
-            const counts = completionCounts.get(unit.unitId)
+            const counts = completionCounts[unit.unitId]
             const filled = counts?.filled ?? 0
             const icon = UNIT_ICONS[unit.unitId] ?? '📄'
             return (
