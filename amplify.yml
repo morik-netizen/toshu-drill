@@ -13,6 +13,8 @@ frontend:
         - echo "DATABASE_URL=${DATABASE_URL}&uselibpqcompat=true" >> .env.production
         - echo "S3_BUCKET_NAME=$S3_BUCKET_NAME" >> .env.production
         - echo "S3_REGION=$S3_REGION" >> .env.production
+        - echo "S3_ACCESS_KEY_ID=$S3_ACCESS_KEY_ID" >> .env.production
+        - echo "S3_SECRET_ACCESS_KEY=$S3_SECRET_ACCESS_KEY" >> .env.production
         - echo "NODE_TLS_REJECT_UNAUTHORIZED=$NODE_TLS_REJECT_UNAUTHORIZED" >> .env.production
     build:
       commands:

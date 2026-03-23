@@ -12,7 +12,14 @@ const REGION = process.env.S3_REGION ?? 'ap-northeast-1'
 const globalForS3 = globalThis as unknown as { s3Client: S3Client }
 
 function createS3Client(): S3Client {
-  return new S3Client({ region: REGION })
+  const options: ConstructorParameters<typeof S3Client>[0] = { region: REGION }
+  if (process.env.S3_ACCESS_KEY_ID && process.env.S3_SECRET_ACCESS_KEY) {
+    options.credentials = {
+      accessKeyId: process.env.S3_ACCESS_KEY_ID,
+      secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
+    }
+  }
+  return new S3Client(options)
 }
 
 const s3 = globalForS3.s3Client ?? createS3Client()
