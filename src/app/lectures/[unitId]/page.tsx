@@ -82,7 +82,7 @@ export default async function LectureDetailPage({
             return (
               <LectureSection
                 key={`${unit.unitId}-sec-${idx}`}
-                title={sec.title}
+                title={sec.photoSlot ? `📸 ${sec.title}` : sec.title}
                 defaultOpen={idx === 0}
               >
                 <div
