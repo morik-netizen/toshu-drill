@@ -203,12 +203,12 @@ export function PhotoSlot({
       )}
 
       {state === 'filled' && imageUrl && (
-        <div className="relative w-full h-32 rounded-xl overflow-hidden border border-gray-200">
+        <div className="relative w-full rounded-xl overflow-hidden border border-gray-200">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={imageUrl}
             alt={label}
-            className="w-full h-full object-cover"
+            className="w-full h-auto"
           />
           <button
             onClick={handleDelete}
