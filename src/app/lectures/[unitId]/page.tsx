@@ -83,7 +83,7 @@ export default async function LectureDetailPage({
               <LectureSection
                 key={`${unit.unitId}-sec-${idx}`}
                 title={sec.photoSlot ? `📸 ${sec.title}` : sec.title}
-                defaultOpen={idx === 0}
+                defaultOpen={idx === 0 || existing !== undefined}
               >
                 <div
                   className="prose prose-sm max-w-none
