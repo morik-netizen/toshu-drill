@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState } from 'react'
 
 type LectureSectionProps = {
   title: string
@@ -14,16 +14,6 @@ export function LectureSection({
   defaultOpen = false,
 }: LectureSectionProps) {
   const [isOpen, setIsOpen] = useState(defaultOpen)
-  const contentRef = useRef<HTMLDivElement>(null)
-  const [contentHeight, setContentHeight] = useState<number | undefined>(
-    undefined,
-  )
-
-  useEffect(() => {
-    if (contentRef.current) {
-      setContentHeight(contentRef.current.scrollHeight)
-    }
-  }, [children, isOpen])
 
   return (
     <div className="border border-gray-100 rounded-xl overflow-hidden">
@@ -48,17 +38,11 @@ export function LectureSection({
           />
         </svg>
       </button>
-      <div
-        style={{
-          maxHeight: isOpen ? contentHeight ?? 'none' : 0,
-          opacity: isOpen ? 1 : 0,
-        }}
-        className="transition-all duration-200 ease-in-out overflow-hidden"
-      >
-        <div ref={contentRef} className="px-4 pb-4 pt-2">
+      {isOpen && (
+        <div className="px-4 pb-4 pt-2">
           {children}
         </div>
-      </div>
+      )}
     </div>
   )
 }
