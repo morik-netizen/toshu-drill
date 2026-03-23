@@ -6,7 +6,7 @@ import {
 } from '@aws-sdk/client-s3'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 
-const BUCKET_NAME = process.env.S3_BUCKET_NAME!
+const BUCKET_NAME = process.env.S3_BUCKET_NAME ?? 'toshu-drill-lecture-photos'
 const REGION = process.env.S3_REGION ?? 'ap-northeast-1'
 
 const globalForS3 = globalThis as unknown as { s3Client: S3Client }
