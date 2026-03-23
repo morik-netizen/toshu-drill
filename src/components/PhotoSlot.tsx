@@ -95,8 +95,10 @@ export function PhotoSlot({
         })
 
         if (!res.ok) {
-          const data = await res.json()
-          throw new Error(data.error ?? 'アップロードURLの取得に失敗しました')
+          const text = await res.text()
+          let msg = 'アップロードURLの取得に失敗しました'
+          try { msg = JSON.parse(text).error ?? msg } catch {}
+          throw new Error(msg)
         }
 
         const { uploadUrl, photoId: newPhotoId } = await res.json()
@@ -153,12 +155,15 @@ export function PhotoSlot({
 
   return (
     <div className="relative">
-      <p className="text-xs font-medium text-gray-600 mb-1">{label}</p>
+      <div className="flex items-center gap-1 mb-1">
+        <span className="text-sm">📸</span>
+        <p className="text-xs font-bold text-emerald-700">{label}</p>
+      </div>
 
       {state === 'empty' && (
-        <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-emerald-400 hover:bg-emerald-50 transition-colors">
+        <label className="flex flex-col items-center justify-center w-full h-36 border-2 border-dashed border-emerald-400 bg-emerald-50 rounded-xl cursor-pointer hover:border-emerald-500 hover:bg-emerald-100 transition-colors">
           <svg
-            className="w-8 h-8 text-gray-400 mb-1"
+            className="w-10 h-10 text-emerald-500 mb-1"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -176,7 +181,7 @@ export function PhotoSlot({
               d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
             />
           </svg>
-          <span className="text-xs text-gray-500">写真を追加</span>
+          <span className="text-sm font-medium text-emerald-600">タップして写真を撮影</span>
           <input
             ref={fileInputRef}
             type="file"
