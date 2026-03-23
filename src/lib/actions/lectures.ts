@@ -24,16 +24,29 @@ export async function getUserPhotosForUnit(
     orderBy: { createdAt: 'asc' },
   })
 
-  const photosWithUrls = await Promise.all(
-    photos.map(async (photo) => ({
+  if (photos.length === 0) {
+    return []
+  }
+
+  try {
+    const photosWithUrls = await Promise.all(
+      photos.map(async (photo) => ({
+        id: photo.id,
+        slotId: photo.slotId,
+        s3Key: photo.s3Key,
+        downloadUrl: await getPresignedDownloadUrl(photo.s3Key),
+      })),
+    )
+    return photosWithUrls
+  } catch {
+    // S3 presigned URL generation failed - return photos without URLs
+    return photos.map((photo) => ({
       id: photo.id,
       slotId: photo.slotId,
       s3Key: photo.s3Key,
-      downloadUrl: await getPresignedDownloadUrl(photo.s3Key),
-    })),
-  )
-
-  return photosWithUrls
+      downloadUrl: '',
+    }))
+  }
 }
 
 export type PhotoCompletionCount = {

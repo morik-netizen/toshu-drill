@@ -11,6 +11,9 @@ frontend:
         - echo "GOOGLE_CLIENT_ID=$GOOGLE_CLIENT_ID" >> .env.production
         - echo "GOOGLE_CLIENT_SECRET=$GOOGLE_CLIENT_SECRET" >> .env.production
         - echo "DATABASE_URL=${DATABASE_URL}&uselibpqcompat=true" >> .env.production
+        - echo "S3_BUCKET_NAME=$S3_BUCKET_NAME" >> .env.production
+        - echo "S3_REGION=$S3_REGION" >> .env.production
+        - echo "NODE_TLS_REJECT_UNAUTHORIZED=$NODE_TLS_REJECT_UNAUTHORIZED" >> .env.production
     build:
       commands:
         - npm run build
