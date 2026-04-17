@@ -1,6 +1,12 @@
 {
   "name": "toshu-drill",
   "version": "0.1.0",
+  "description": "徒手療法論の学習アプリ（柔道整復師養成校向け）。4択/○×問題のSM-2間隔反復、講義ノート写真アップロード、PDFエクスポート。",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/morik-netizen/toshu-drill.git"
+  },
   "private": true,
   "scripts": {
     "dev": "next dev",
