@@ -1,7 +1,8 @@
 'use server'
 
+import { redirect } from 'next/navigation'
 import { prisma } from '../db'
-import { auth } from '../auth'
+import { auth, isAllowedEmail } from '../auth'
 
 export interface CategoryProgress {
   readonly categoryCode: string
@@ -21,8 +22,8 @@ export interface ProgressData {
 
 export async function getProgress(): Promise<ProgressData> {
   const session = await auth()
-  if (!session?.user?.id) {
-    throw new Error('Not authenticated')
+  if (!session?.user?.id || !isAllowedEmail(session.user.email)) {
+    redirect('/login')
   }
 
   const userId = session.user.id

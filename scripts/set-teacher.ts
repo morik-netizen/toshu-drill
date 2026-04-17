@@ -6,7 +6,12 @@ const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! })
 const prisma = new PrismaClient({ adapter })
 
 async function main() {
-  const email = 'mori.k@asahi.ac.jp'
+  const email = process.argv[2] ?? process.env.TEACHER_EMAIL
+  if (!email) {
+    console.error('Usage: npx tsx scripts/set-teacher.ts <email>')
+    console.error('   or: TEACHER_EMAIL=<email> npx tsx scripts/set-teacher.ts')
+    process.exit(1)
+  }
 
   // Check if user exists
   const user = await prisma.user.findUnique({

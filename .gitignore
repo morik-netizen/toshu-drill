@@ -51,3 +51,7 @@ public/swe-worker*
 /test-results/
 /playwright-report/
 /playwright/.cache/
+
+# 国家試験 question data (copyrighted, do not publish)
+/refelence/
+/reference/

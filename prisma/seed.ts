@@ -5,8 +5,7 @@ import { parse } from 'csv-parse/sync'
 import * as fs from 'fs'
 import * as path from 'path'
 
-const connUrl = process.env.DATABASE_URL!.replace('sslmode=require', 'sslmode=no-verify')
-const adapter = new PrismaPg({ connectionString: connUrl })
+const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! })
 const prisma = new PrismaClient({ adapter })
 
 // ---------------------------------------------------------------------------
@@ -192,6 +191,11 @@ function parseMaruBatsuCSV(filePath: string): readonly QuestionData[] {
 // ---------------------------------------------------------------------------
 
 async function main() {
+  if (process.env.NODE_ENV === 'production' && process.env.ALLOW_PROD_SEED !== 'true') {
+    console.error('Refusing to run seed in production. Set ALLOW_PROD_SEED=true to override.')
+    process.exit(1)
+  }
+
   const csvDir = path.resolve(__dirname, '..', '..')
 
   const sources = [

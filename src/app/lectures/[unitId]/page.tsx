@@ -103,6 +103,7 @@ export default async function LectureDetailPage({
                     [&_th]:bg-emerald-50 [&_th]:px-2 [&_th]:py-1 [&_th]:border [&_th]:border-gray-200 [&_th]:text-left
                     [&_td]:px-2 [&_td]:py-1 [&_td]:border [&_td]:border-gray-200
                     [&_ul]:pl-5 [&_ol]:pl-5 [&_li]:mb-1"
+                  // sec.content is sourced from LECTURE_UNITS static constants only. If this ever becomes user-sourced, sanitize with DOMPurify first.
                   dangerouslySetInnerHTML={{ __html: sec.content }}
                 />
                 {sec.photoSlot && (

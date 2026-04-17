@@ -12,6 +12,7 @@ export function PrintSection({ section }: PrintSectionProps) {
       </h3>
       <div
         className="print-prose text-sm leading-relaxed"
+        // contentHtml is sourced from LECTURE_UNITS static constants only. If this ever becomes user-sourced, sanitize with DOMPurify first.
         dangerouslySetInnerHTML={{ __html: section.contentHtml }}
       />
       {section.photoSlot && (

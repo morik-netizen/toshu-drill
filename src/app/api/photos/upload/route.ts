@@ -4,6 +4,7 @@ import { prisma } from '@/lib/db'
 import { getPresignedUploadUrl, deleteObject } from '@/lib/s3'
 
 const UNIT_ID_PATTERN = /^U(0[1-9]|1[0-2])$/
+const SLOT_ID_PATTERN = /^[a-zA-Z0-9_-]{1,64}$/
 
 export async function POST(request: Request) {
   try {
@@ -33,6 +34,13 @@ export async function POST(request: Request) {
     if (!UNIT_ID_PATTERN.test(unitId)) {
       return NextResponse.json(
         { error: 'unitId の形式が不正です（U01〜U12）' },
+        { status: 400 },
+      )
+    }
+
+    if (!SLOT_ID_PATTERN.test(slotId)) {
+      return NextResponse.json(
+        { error: 'slotId の形式が不正です' },
         { status: 400 },
       )
     }
