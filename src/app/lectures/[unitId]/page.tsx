@@ -47,7 +47,7 @@ export default async function LectureDetailPage({
       </header>
 
       {/* Unit navigation pills */}
-      <nav className="px-4 pb-4 overflow-x-auto">
+      <nav className="px-4 pb-2 overflow-x-auto">
         <div className="flex gap-1 min-w-max">
           {LECTURE_UNITS.map((u) => (
             <Link
@@ -64,6 +64,18 @@ export default async function LectureDetailPage({
           ))}
         </div>
       </nav>
+
+      {/* PDF export button */}
+      <div className="px-4 pb-4">
+        <a
+          href={`/lectures/print?unit=${unitId}&autoprint=1`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1 text-xs font-medium text-emerald-700 border border-emerald-300 rounded-full px-3 py-1 hover:bg-emerald-50"
+        >
+          📄 この回をPDFで保存
+        </a>
+      </div>
 
       {/* Content */}
       <section className="mx-4 space-y-3">

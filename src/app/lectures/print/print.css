@@ -1,0 +1,105 @@
+@page {
+  size: A4 portrait;
+  margin: 15mm;
+}
+
+.print-root {
+  max-width: 180mm;
+  margin: 0 auto;
+  padding: 16mm 12mm;
+  background: white;
+  color: black;
+}
+
+.print-prose p {
+  margin: 0.4em 0;
+}
+
+.print-prose ul,
+.print-prose ol {
+  padding-left: 1.4em;
+  margin: 0.4em 0;
+}
+
+.print-prose li {
+  margin-bottom: 0.2em;
+}
+
+.print-prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0.6em 0;
+  font-size: 0.8rem;
+}
+
+.print-prose th {
+  background: #ecfdf5;
+  border: 1px solid #d1d5db;
+  padding: 4px 6px;
+  text-align: left;
+}
+
+.print-prose td {
+  border: 1px solid #d1d5db;
+  padding: 4px 6px;
+}
+
+.print-prose strong {
+  font-weight: 700;
+}
+
+@media print {
+  html,
+  body {
+    background: white !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .print-root {
+    max-width: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .page-break-before {
+    page-break-before: always;
+    break-before: page;
+  }
+
+  .print-unit {
+    page-break-inside: auto;
+  }
+
+  .print-section {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .print-photo,
+  .print-photo-placeholder {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .print-photo img {
+    max-width: 160mm;
+    max-height: 120mm;
+    width: auto;
+    height: auto;
+  }
+
+  table,
+  tr,
+  td,
+  th {
+    page-break-inside: avoid;
+  }
+
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}

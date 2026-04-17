@@ -37,6 +37,20 @@ export default async function LecturesPage() {
         </p>
       </header>
 
+      <section className="mx-4 mb-4">
+        <a
+          href="/lectures/print?all=true&autoprint=1"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex flex-col items-center justify-center gap-1 w-full bg-emerald-600 text-white font-bold py-3 px-4 rounded-xl hover:bg-emerald-700 transition-colors"
+        >
+          <span className="text-sm">📄 全12回分をPDFで保存</span>
+          <span className="text-[10px] font-normal opacity-90">
+            ブラウザの印刷ダイアログで「PDFとして保存」を選択
+          </span>
+        </a>
+      </section>
+
       <section className="mx-4">
         <div className="grid grid-cols-2 gap-2">
           {LECTURE_UNITS.map((unit) => {
