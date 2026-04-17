@@ -37,6 +37,18 @@ export default async function LecturesPage() {
         </p>
       </header>
 
+      <section className="mx-4 mb-3">
+        <div className="bg-amber-50 border border-amber-300 rounded-xl p-3">
+          <p className="text-xs font-bold text-amber-800">
+            ⚠️ 年度末にデータが削除されます
+          </p>
+          <p className="text-[11px] text-amber-700 mt-1 leading-snug">
+            来年度の学生用にサーバーをリセットするため、アップロードした写真やノートは消えます。
+            必ず下のボタンからPDFで手元に保存しておいてください。
+          </p>
+        </div>
+      </section>
+
       <section className="mx-4 mb-4">
         <a
           href="/lectures/print?all=true&autoprint=1"

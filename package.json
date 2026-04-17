@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test": "jest",
+    "test:e2e": "playwright test",
+    "test:e2e:prod": "PLAYWRIGHT_BASE_URL=https://master.darvc02yagg0e.amplifyapp.com playwright test"
   },
   "prisma": {
     "seed": "npx tsx prisma/seed.ts"
@@ -28,6 +31,7 @@
   },
   "devDependencies": {
     "@jest/globals": "^30.3.0",
+    "@playwright/test": "^1.59.1",
     "@tailwindcss/postcss": "^4",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
