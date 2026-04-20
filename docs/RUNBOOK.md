@@ -664,3 +664,75 @@ PRISMA_DATABASE_URL="postgresql://prod-url" npx prisma studio
 - [NextAuth.js Production Checklist](https://next-auth.js.org/deployment)
 - [Prisma Migration Guide](https://www.prisma.io/docs/orm/prisma-migrate)
 - [AWS CloudWatch Monitoring](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/GettingStarted.html)
+
+---
+
+## ⚠️ Operational Gotchas（2026-04-20 追記）
+
+### 1. Amplify 環境変数は App-level と Branch-level の2層構造
+
+Branch-level の環境変数が App-level を **オーバーライド** する。変更時は必ず両方を確認し、どちらを更新すべきかを判断すること。
+
+```bash
+# App-level env (全ブランチ共通のデフォルト)
+aws amplify get-app --app-id <APP_ID> --query 'app.environmentVariables'
+
+# Branch-level env (特定ブランチのみ、App-level をオーバーライド)
+aws amplify get-branch --app-id <APP_ID> --branch-name master \
+  --query 'branch.environmentVariables'
+```
+
+更新:
+```bash
+# App-level 更新
+aws amplify update-app --app-id <APP_ID> \
+  --environment-variables file://env.json
+
+# Branch-level 更新
+aws amplify update-branch --app-id <APP_ID> --branch-name master \
+  --environment-variables file://env.json
+```
+
+**本アプリの現状**: Branch-level env は **空** にして App-level のみで管理している。誤って Branch-level を設定すると App-level の更新が反映されなくなるので注意。
+
+### 2. Aurora Serverless v2 の TLS 証明書
+
+Aurora RDS の SSL 証明書は Node.js のデフォルト CA トラストストアに含まれていない。以下のいずれかが必要:
+
+- **現行**: `DATABASE_URL` に `sslmode=no-verify` を付与（SSL暗号化はON、証明書検証はOFF）
+- **推奨（未適用）**: `certs/rds-global-bundle.pem` を同梱して PrismaPg に `ssl: { ca }` を明示渡し
+
+`@prisma/adapter-pg` 7系では `ssl` オプションが一部ケースで無視されるため、現状は `sslmode=no-verify` で運用中。
+
+### 3. `.env.production` のビルドキャッシュ問題
+
+Amplify のビルドキャッシュには `.env.production` が残ることがある。`amplify.yml` の preBuild 先頭で必ず `rm -f .env.production` してから書き直すこと。
+
+```yaml
+preBuild:
+  commands:
+    - rm -f .env.production
+    - echo "AUTH_SECRET=$AUTH_SECRET" >> .env.production
+    # ...
+```
+
+### 4. DB ユーザーの独立性
+
+このアプリ (`toshu-drill`) と姉妹アプリ (`kokushi-houki-master`) は同じ Aurora クラスター `kokushi-cluster` を共有しているが、DB ユーザーは独立:
+
+- `toshu_drill_user` → `toshu_drill` DB
+- `kokushi_user` → `kokushi` DB
+
+`kokushi_admin`（マスター）は日常運用に使わず、管理作業時のみ使用。パスワードローテーションは各 DB ユーザーの単位で独立に実施できる。
+
+### 5. Aurora Data API
+
+DDL/DCL を VPC 外から実行するために有効化済み。Secrets Manager 連携で `aws rds-data execute-statement` で SQL 実行可能。
+
+```bash
+aws rds enable-http-endpoint --resource-arn \
+  arn:aws:rds:ap-northeast-1:584539913344:cluster:kokushi-cluster
+```
+
+詳細は [plan/2026-04-20_作業サマリー.md](../../plan/2026-04-20_作業サマリー.md) を参照。
+
