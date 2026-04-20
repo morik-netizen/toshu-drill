@@ -4,7 +4,7 @@
 **Audience:** Developers & DevOps
 **Platform:** AWS Amplify SSR (Next.js 15)
 
-This document describes how to deploy, maintain, and troubleshoot the kokushi-houki learning app in production.
+This document describes how to deploy, maintain, and troubleshoot the toshu-drill (徒手療法ドリル) learning app in production.
 
 ---
 
