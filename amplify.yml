@@ -5,6 +5,7 @@ frontend:
       commands:
         - npm ci
         - npx prisma generate
+        - rm -f .env.production
         - echo "AUTH_SECRET=$AUTH_SECRET" >> .env.production
         - echo "AUTH_TRUST_HOST=true" >> .env.production
         - echo "AUTH_URL=$AUTH_URL" >> .env.production
