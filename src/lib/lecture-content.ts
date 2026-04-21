@@ -159,7 +159,7 @@ export const LECTURE_UNITS: readonly LectureUnit[] = [
 </table>
 <ul>
   <li>Grade I〜II：疼痛軽減 → <strong>安静肢位</strong>で離開を使用</li>
-  <li>Grade II〜III：可動域改善 → <strong>治療肢位</strong>（制限方向の最終域）で8〜10秒保持</li>
+  <li>Grade III：可動域改善 → <strong>治療肢位</strong>（制限方向の最終域）で8〜10秒保持</li>
 </ul>
 `,
       },
@@ -172,18 +172,6 @@ export const LECTURE_UNITS: readonly LectureUnit[] = [
   <tr><td><strong>Soft</strong></td><td>柔らかい</td><td>膝屈曲（太ももとふくらはぎがぶつかる）</td></tr>
   <tr><td><strong>Firm</strong></td><td>弾力のある硬さ</td><td>足関節背屈（アキレス腱が突っ張る）</td></tr>
   <tr><td><strong>Hard</strong></td><td>硬い</td><td>肘伸展（骨同士がぶつかる）</td></tr>
-</table>
-`,
-      },
-      {
-        title: 'Joint Playテストと臨床的解釈',
-        content: `
-<p>治療肢位で一方の関節面を固定し、もう一方を他動的に離開あるいは滑らせて、<strong>可動域</strong>と<strong>抵抗感</strong>を検査する</p>
-<table>
-  <tr><th>他動運動</th><th>Joint Play</th><th>制限因子</th><th>対応</th></tr>
-  <tr><td><strong>Soft</strong></td><td><strong>Soft</strong></td><td>筋・軟部組織</td><td>ストレッチ等で対応</td></tr>
-  <tr><td><strong>Firm</strong></td><td><strong>Firm</strong></td><td>関節周囲組織（関節包・靱帯等）</td><td><strong>モビライゼーションの対象</strong></td></tr>
-  <tr><td><strong>Hard</strong></td><td><strong>Hard</strong></td><td>骨・骨軟骨（骨棘・骨堤等）</td><td>徒手的な改善は困難</td></tr>
 </table>
 `,
       },
@@ -201,7 +189,7 @@ export const LECTURE_UNITS: readonly LectureUnit[] = [
 <ol start="5">
   <li>凹凸を判断し滑りの方向を決定（凹は同じ、凸は逆）</li>
   <li>OPPでGrade I〜II（離開）→ 疼痛への反応を確認</li>
-  <li>治療肢位でGrade II〜III → 8〜10秒保持 × 数セット</li>
+  <li>治療肢位でGrade III → 8〜10秒保持 × 数セット</li>
   <li>治療前後で再評価 → ROM・痛みの変化を確認</li>
 </ol>
 `,
@@ -443,7 +431,7 @@ export const LECTURE_UNITS: readonly LectureUnit[] = [
   <li>回内制限 → 腓骨方向へ回す</li>
   <li>回外制限 → 脛骨方向へ回す</li>
   <li>ヘンケ軸の方向に沿って回す</li>
-  <li>グレード II〜III を繰り返す</li>
+  <li>グレード III を繰り返す</li>
 </ul>
 `,
         photoSlot: {
@@ -473,7 +461,7 @@ export const LECTURE_UNITS: readonly LectureUnit[] = [
   <li>舟状骨を固定しながら立方骨を滑らせる</li>
   <li>回内制限 → 背側へ滑らせる</li>
   <li>回外制限 → 底側へ滑らせる</li>
-  <li>グレード II〜III を繰り返す</li>
+  <li>グレード III を繰り返す</li>
 </ul>
 `,
         photoSlot: {
@@ -491,7 +479,7 @@ export const LECTURE_UNITS: readonly LectureUnit[] = [
   <li>頭側の手：距骨の前方中央部にwebを当てる</li>
   <li>尾側の手：舟状骨結節を探し、舟状骨の背側部に母指のMP関節部をコンタクト</li>
   <li>回転させるイメージで膝の屈伸を使い床方向にモビライゼーション</li>
-  <li>グレード II〜III を繰り返す</li>
+  <li>グレード III を繰り返す</li>
 </ul>
 `,
         photoSlot: {
@@ -508,7 +496,7 @@ export const LECTURE_UNITS: readonly LectureUnit[] = [
 <ul>
   <li>内側の手の母指で舟状骨を底側からコンタクト</li>
   <li>外側の手の尺側で、その母指を押すように背側方向へモビライゼーション</li>
-  <li>グレード II〜III を繰り返す</li>
+  <li>グレード III を繰り返す</li>
 </ul>
 `,
         photoSlot: {
@@ -557,7 +545,7 @@ export const LECTURE_UNITS: readonly LectureUnit[] = [
   <li>離開と同じ把持・開始肢位で行う</li>
   <li>屈曲制限 → 中足骨底を底側へ滑らせる</li>
   <li>背屈制限 → 中足骨底を背側へ滑らせる</li>
-  <li>グレード II〜III を繰り返す</li>
+  <li>グレード III を繰り返す</li>
 </ul>
 `,
         photoSlot: {
@@ -580,7 +568,7 @@ export const LECTURE_UNITS: readonly LectureUnit[] = [
   <li>頭側の手：中足骨頭の最も遠位部をつまみ握り（pinch grasp）で固定</li>
   <li>尾側の手：基節骨の最も近位部を引っ掛け握り（hook grasp）で把持</li>
 </ul>
-<p><strong>手技</strong>：離開はグレード I〜II、滑りはグレード II〜III を繰り返す</p>
+<p><strong>手技</strong>：離開はグレード I〜II、滑りはグレード III を繰り返す</p>
 `,
         photoSlot: {
           slotId: 'mtp-traction-glide',
@@ -675,7 +663,7 @@ export const LECTURE_UNITS: readonly LectureUnit[] = [
   <li>術者は患者の足部を肩に乗せる</li>
   <li>両手で下腿近位を把持</li>
   <li>そのまま背側方向へモビライゼーション</li>
-  <li>グレード II〜III を繰り返す</li>
+  <li>グレード III を繰り返す</li>
 </ul>
 `,
         photoSlot: {
@@ -693,7 +681,7 @@ export const LECTURE_UNITS: readonly LectureUnit[] = [
   <li>一方の手で下腿の近位前面を把持</li>
   <li>もう一方の手で下腿の遠位前面を把持</li>
   <li>膝の屈曲が入らないように、背側へモビライゼーション</li>
-  <li>グレード II〜III を繰り返す</li>
+  <li>グレード III を繰り返す</li>
 </ul>
 `,
         photoSlot: {
@@ -710,7 +698,7 @@ export const LECTURE_UNITS: readonly LectureUnit[] = [
 <ul>
   <li>両手で下腿近位を把持</li>
   <li>そのままベッド方向（背側方向）へモビライゼーション</li>
-  <li>グレード II〜III を繰り返す</li>
+  <li>グレード III を繰り返す</li>
 </ul>
 `,
         photoSlot: {
@@ -728,7 +716,7 @@ export const LECTURE_UNITS: readonly LectureUnit[] = [
   <li>頭側の手で下腿近位後面を把持</li>
   <li>もう一方の手で下腿を把持</li>
   <li>腰の回旋を使いながら腹側方向へモビライゼーション</li>
-  <li>グレード II〜III を繰り返す</li>
+  <li>グレード III を繰り返す</li>
 </ul>
 `,
         photoSlot: {
@@ -746,7 +734,7 @@ export const LECTURE_UNITS: readonly LectureUnit[] = [
   <li>尾側の手で下腿近位を把持</li>
   <li>頭側の手で大腿遠位を前面からコンタクト</li>
   <li>頭側の手を少し内旋気味にしながら背側へ押し込む</li>
-  <li>グレード II〜III を繰り返す</li>
+  <li>グレード III を繰り返す</li>
 </ul>
 `,
         photoSlot: {
@@ -765,7 +753,7 @@ export const LECTURE_UNITS: readonly LectureUnit[] = [
   <li>尾側の手で下腿遠位を把持</li>
   <li>内側顆に当てた手のヒールで押し込む → 屈曲制限のアプローチ</li>
   <li>外側顆に当てた手のヒールで押し込む → 伸展制限のアプローチ</li>
-  <li>グレード II〜III を繰り返す</li>
+  <li>グレード III を繰り返す</li>
 </ul>
 `,
         photoSlot: {
@@ -800,7 +788,7 @@ export const LECTURE_UNITS: readonly LectureUnit[] = [
   <li>その上にもう一方の手を重ねる</li>
   <li>下腿長軸方向に膝蓋骨を滑らせる</li>
 </ul>
-<p>いずれもグレード II〜III を繰り返す</p>
+<p>いずれもグレード III を繰り返す</p>
 `,
         photoSlot: {
           slotId: 'patella-caudal-glide',
@@ -851,7 +839,7 @@ export const LECTURE_UNITS: readonly LectureUnit[] = [
   <li>反対の手をその上に重ねる</li>
   <li>鼠径部の奥へ押し込む</li>
   <li>前腕を回外するようにして、自分の胸の方向に引きつけて離開する</li>
-  <li>グレード II〜III を繰り返す</li>
+  <li>グレード III を繰り返す</li>
 </ul>
 `,
         photoSlot: {
@@ -1556,7 +1544,8 @@ export const LECTURE_UNITS: readonly LectureUnit[] = [
           '<li>膝・股関節を屈曲して押す</li>' +
           '<li>カウンターは当てない</li>' +
           '</ul>' +
-          '<p>※ 尾側とは上腕骨長軸に対して平行な方向<strong>ではない</strong>（下垂位を除く）</p>',
+          '<p>※ 尾側とは上腕骨長軸に対して平行な方向<strong>ではない</strong>（下垂位を除く）</p>' +
+          '<p><strong>適応：</strong>挙上制限（屈曲・外転制限）</p>',
         photoSlot: { slotId: 'shoulder-caudal-mob', label: '肩関節 尾側モビ' },
       },
       {
@@ -1564,8 +1553,10 @@ export const LECTURE_UNITS: readonly LectureUnit[] = [
         content:
           '<p><strong>目的：</strong></p>' +
           '<table><tr><th>方向</th><th>適応</th></tr>' +
-          '<tr><td>背側への滑り</td><td>屈曲 or 内旋制限</td></tr>' +
-          '<tr><td>腹側への滑り</td><td>伸展 or 外旋制限</td></tr></table>' +
+          '<tr><td>下方（尾側）</td><td>挙上制限（屈曲・外転）</td></tr>' +
+          '<tr><td>背側</td><td>内旋制限</td></tr>' +
+          '<tr><td>腹側</td><td>外旋 / 屈曲 / 伸展制限</td></tr></table>' +
+          '<p style="margin-top:0.8em;font-size:0.85em;color:#555;">📚 <strong>備考（発展学習）</strong>: Kaltenborn 凸の法則に基づく基本。Johnson AJ et al. <em>JOSPT</em> 2007;37(3):88-99 の RCT では癒着性関節包炎で背側滑りが外旋を 31.2° 改善と報告。病態により制限因子が変わるため、臨床では患者の症状で方向を決める。</p>' +
           '<p><strong>開始肢位：</strong>背臥位</p>' +
           '<p><strong>手技：</strong></p>' +
           '<ol>' +
@@ -1870,7 +1861,7 @@ export const LECTURE_UNITS: readonly LectureUnit[] = [
           '<p><strong>掌側内転制限：</strong>凸 → 橈側方向へ並進</p>' +
           '<p><strong>橈側外転制限：</strong>凹 → 背側方向へ滑らす</p>' +
           '<p><strong>尺側内転制限：</strong>凹 → 掌側方向へ滑らす</p>' +
-          '<p><strong>手技：</strong>大菱形骨をピンチし、中手骨近位をしっかりピンチしてグレード II〜III でモビライゼーションする</p>',
+          '<p><strong>手技：</strong>大菱形骨をピンチし、中手骨近位をしっかりピンチしてグレード III でモビライゼーションする</p>',
         photoSlot: { slotId: 'hand-1st-cm-joint-mob', label: '第1CM関節モビ' },
       },
       {
