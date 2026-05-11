@@ -710,7 +710,7 @@ export const LECTURE_UNITS: readonly LectureUnit[] = [
         title: '膝関節：腹側滑り',
         content: `
 <p><strong>目的</strong>：伸展制限の改善</p>
-<p><strong>開始肢位</strong>：背臥位、大腿遠位前面にうっすらとタオルを敷く</p>
+<p><strong>開始肢位</strong>：腹臥位、大腿遠位前面にうっすらとタオルを敷く</p>
 <p><strong>手技</strong>：</p>
 <ul>
   <li>頭側の手で下腿近位後面を把持</li>
