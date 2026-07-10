@@ -1,6 +1,26 @@
 # Changelog
 
-## [Unreleased] - 2026-04-20
+## [Unreleased] - 2026-07-10
+
+### Added
+- **間違いノートから復習開始**: `/quiz?mode=mistakes` を追加し、間違いノート上部に「間違えた問題を復習する」ボタンを設置
+- 模擬試験セッションに「中断する」リンク
+
+### Changed
+- **結果画面に問題文と選択肢本文を表示**（従来は正解/不正解と解説のみで文脈が消えていた）
+- ホームのストリーク表記を「🔥 今週N日」に明確化
+- 進捗ページのカテゴリ表記を「挑戦 N/M問」に明確化
+
+### Fixed
+- **ESLint設定破損**: eslint-config-next v15 は旧形式のため FlatCompat 経由の読み込みに修正（`npm run lint` が実行不能だった）
+- **おすすめ問題数の不一致**: ホームの「おすすめN問」に対し学習画面が常に12問固定だった → `/quiz?count=` で推奨数を引き継ぎ（5〜30にクランプ）
+- **redirect() の握りつぶし**: Server Component の try/catch が Next.js の制御フロー例外を握りつぶし、未ログイン時にログイン画面へ転送されなかった → `unstable_rethrow` で再スロー（ビルド時の "Mock test error" ノイズも解消）
+- 未使用 import の除去（lint 警告解消）
+
+### Operations
+- mori.k@asahi.ac.jp に teacher ロールを付与（Aurora Data API 経由。`rds-db-credentials/.../kokushi_admin` のシークレットは資格情報が古く認証失敗するため、`.env` の資格情報から一時シークレットを作成して実行後に削除）
+
+## [Released] - 2026-04-20
 
 ### Added
 - **講義ノートPDFエクスポート機能**: 学生が各ユニット/全12回分の講義ノート（HTMLコンテンツ+写真）を PDF で保存できる機能 (`/lectures/print?unit=U01` / `?all=true`)
