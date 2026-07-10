@@ -1,3 +1,5 @@
+import Link from 'next/link'
+import { unstable_rethrow } from 'next/navigation'
 import { BottomNav } from '@/components/BottomNav'
 import { getMistakes } from '@/lib/actions/quiz'
 
@@ -5,8 +7,9 @@ export default async function MistakesPage() {
   let mistakes: Awaited<ReturnType<typeof getMistakes>> = []
   try {
     mistakes = await getMistakes()
-  } catch {
-    // 未ログインまたはDB未接続
+  } catch (e) {
+    // redirect() 等は再スロー。DB未接続時のみ空表示にフォールバック
+    unstable_rethrow(e)
   }
 
   return (
@@ -26,6 +29,12 @@ export default async function MistakesPage() {
         </div>
       ) : (
         <div className="mx-4 flex flex-col gap-3">
+          <Link
+            href="/quiz?mode=mistakes"
+            className="block w-full py-3 bg-primary text-white rounded-xl font-medium text-center hover:bg-primary-hover active:scale-[0.98] transition-all"
+          >
+            間違えた問題を復習する →
+          </Link>
           {mistakes.map((m) => (
             <div
               key={m.questionId}

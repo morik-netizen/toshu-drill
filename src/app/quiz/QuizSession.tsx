@@ -195,7 +195,7 @@ export function QuizSession({ questions }: QuizSessionProps) {
           selectedAnswer={lastAnswer}
           onNext={handleNext}
           isLast={session.currentIndex + 1 >= questions.length}
-          questionType={currentQuestion.questionType}
+          question={currentQuestion}
         />
       )}
     </>

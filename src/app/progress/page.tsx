@@ -1,3 +1,4 @@
+import { unstable_rethrow } from 'next/navigation'
 import { BottomNav } from '@/components/BottomNav'
 import { getProgress } from '@/lib/actions/progress'
 
@@ -5,8 +6,9 @@ export default async function ProgressPage() {
   let data: Awaited<ReturnType<typeof getProgress>> | null = null
   try {
     data = await getProgress()
-  } catch {
-    // 未ログインまたはDB未接続
+  } catch (e) {
+    // redirect() 等は再スロー。DB未接続時のみ空表示にフォールバック
+    unstable_rethrow(e)
   }
 
   return (
@@ -59,7 +61,7 @@ export default async function ProgressPage() {
                         />
                       </div>
                       <div className="text-xs text-muted mt-1">
-                        {cat.attempted}/{cat.total}問
+                        挑戦 {cat.attempted}/{cat.total}問
                       </div>
                     </div>
                   )

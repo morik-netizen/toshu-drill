@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { redirect } from 'next/navigation'
+import { redirect, unstable_rethrow } from 'next/navigation'
 import { BottomNav } from '@/components/BottomNav'
 import { getHomeProgress } from '@/lib/actions/quiz'
 import { auth, signOut, isAllowedEmail } from '@/lib/auth'
@@ -32,8 +32,9 @@ export default async function HomePage() {
   let progress: Awaited<ReturnType<typeof getHomeProgress>> | null = null
   try {
     progress = await getHomeProgress()
-  } catch {
-    // 未ログインまたはDB未接続時はnull
+  } catch (e) {
+    // redirect() 等は再スロー。DB未接続時のみnullにフォールバック
+    unstable_rethrow(e)
   }
 
   const coveragePct = progress
@@ -47,7 +48,7 @@ export default async function HomePage() {
         <div className="flex justify-between items-center">
           <h1 className="text-xl font-bold">徒手療法ドリル</h1>
           <span className="text-sm bg-orange-50 text-orange-600 px-2 py-1 rounded-lg">
-            🔥 {progress?.streakDays ?? 0}日目
+            🔥 今週{progress?.streakDays ?? 0}日
           </span>
         </div>
         {session?.user && (
@@ -113,7 +114,7 @@ export default async function HomePage() {
           </div>
         )}
         <Link
-          href="/quiz"
+          href={`/quiz?count=${progress?.recommendedCount ?? 12}`}
           className="block w-full py-3 bg-primary text-white rounded-xl font-medium text-center hover:bg-primary-hover active:scale-[0.98] transition-all"
         >
           おすすめ{progress?.recommendedCount ?? 12}問を始める →

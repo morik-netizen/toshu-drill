@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { unstable_rethrow } from 'next/navigation'
 import { BottomNav } from '@/components/BottomNav'
 import { getMockTestHistory } from '@/lib/actions/practice-test'
 import type { MockTestResult } from '@/lib/actions/practice-test'
@@ -8,8 +9,9 @@ export default async function MockTestPage() {
 
   try {
     history = await getMockTestHistory()
-  } catch {
-    // 未ログインまたはDB未接続
+  } catch (e) {
+    // redirect() 等は再スロー。DB未接続時のみ空表示にフォールバック
+    unstable_rethrow(e)
   }
 
   return (

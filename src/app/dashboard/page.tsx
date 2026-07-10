@@ -1,5 +1,5 @@
 import { getDashboardData } from '@/lib/actions/dashboard'
-import type { DashboardData, StudentSummary } from '@/lib/actions/dashboard'
+import type { StudentSummary } from '@/lib/actions/dashboard'
 import Link from 'next/link'
 
 export default async function DashboardPage() {

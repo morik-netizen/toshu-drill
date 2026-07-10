@@ -1,3 +1,4 @@
+import { unstable_rethrow } from 'next/navigation'
 import { getMockTestQuestions } from '@/lib/actions/practice-test'
 import { MockTestSession } from './MockTestSession'
 import { BottomNav } from '@/components/BottomNav'
@@ -9,6 +10,8 @@ export default async function MockTestSessionPage() {
   try {
     questions = await getMockTestQuestions()
   } catch (e) {
+    // redirect() 等のNext.js制御フロー例外は握りつぶさず再スロー
+    unstable_rethrow(e)
     console.error('Mock test error:', e)
     error = 'テストの読み込みに失敗しました。もう一度お試しください。'
   }

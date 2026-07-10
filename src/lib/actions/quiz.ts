@@ -73,6 +73,44 @@ async function requireAuth(): Promise<string> {
 }
 
 // ============================================
+// DTO変換 (Date除去)
+// ============================================
+
+interface QuestionRecord {
+  readonly id: number
+  readonly questionType: string
+  readonly categoryCode: string
+  readonly categoryName: string
+  readonly questionText: string
+  readonly choiceA: string
+  readonly choiceB: string
+  readonly choiceC: string
+  readonly choiceD: string
+  readonly correctAnswers: string
+  readonly correctFeedback: string | null
+  readonly incorrectFeedback: string | null
+  readonly similarityGroup: number | null
+}
+
+function toQuestionDTO(q: QuestionRecord): QuestionDTO {
+  return {
+    id: q.id,
+    questionType: q.questionType,
+    categoryCode: q.categoryCode,
+    categoryName: q.categoryName,
+    questionText: q.questionText,
+    choiceA: q.choiceA,
+    choiceB: q.choiceB,
+    choiceC: q.choiceC,
+    choiceD: q.choiceD,
+    correctAnswers: q.correctAnswers,
+    correctFeedback: q.correctFeedback,
+    incorrectFeedback: q.incorrectFeedback,
+    similarityGroup: q.similarityGroup,
+  }
+}
+
+// ============================================
 // 出題: 解放済み問題をSM-2優先で取得
 // ============================================
 
@@ -134,21 +172,29 @@ export async function getQuizQuestions(
   }
 
   // 7. DTO変換 (Date除去)
-  return selected.map((q) => ({
-    id: q.id,
-    questionType: q.questionType,
-    categoryCode: q.categoryCode,
-    categoryName: q.categoryName,
-    questionText: q.questionText,
-    choiceA: q.choiceA,
-    choiceB: q.choiceB,
-    choiceC: q.choiceC,
-    choiceD: q.choiceD,
-    correctAnswers: q.correctAnswers,
-    correctFeedback: q.correctFeedback,
-    incorrectFeedback: q.incorrectFeedback,
-    similarityGroup: q.similarityGroup,
-  }))
+  return selected.map(toQuestionDTO)
+}
+
+// ============================================
+// 間違いノート復習: 間違えた問題から出題
+// ============================================
+
+export async function getMistakeQuizQuestions(
+  maxQuestions: number = 12
+): Promise<readonly QuestionDTO[]> {
+  const userId = await requireAuth()
+
+  const records = await prisma.learningRecord.findMany({
+    where: { userId, totalAttempts: { gt: 0 } },
+    include: { question: true },
+    orderBy: { updatedAt: 'desc' },
+  })
+
+  // 間違いノートと同じ条件: 間違えたことがあり、直近3回連続正解していない
+  return records
+    .filter((r) => r.correctCount < r.totalAttempts && r.repetitions < 3)
+    .slice(0, maxQuestions)
+    .map((r) => toQuestionDTO(r.question))
 }
 
 // ============================================

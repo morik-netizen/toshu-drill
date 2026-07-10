@@ -227,10 +227,18 @@ export function MockTestSession({ questions }: Props) {
       {/* ヘッダー */}
       <div className="flex justify-between items-center px-4 py-2 text-xs text-muted">
         <span>模擬試験</span>
-        <span>
-          残り{' '}
-          {questions.length - state.currentIndex - 1}問
-        </span>
+        <div className="flex items-center gap-3">
+          <span>
+            残り{' '}
+            {questions.length - state.currentIndex - 1}問
+          </span>
+          <Link
+            href="/mock-test"
+            className="underline hover:text-foreground"
+          >
+            中断する
+          </Link>
+        </div>
       </div>
 
       {/* プログレスバー */}

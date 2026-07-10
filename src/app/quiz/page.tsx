@@ -1,7 +1,17 @@
-import { getQuizQuestions } from '@/lib/actions/quiz'
+import { getQuizQuestions, getMistakeQuizQuestions } from '@/lib/actions/quiz'
 import { QuizSession } from './QuizSession'
 import { BottomNav } from '@/components/BottomNav'
 import Link from 'next/link'
+
+const DEFAULT_COUNT = 12
+const MIN_COUNT = 5
+const MAX_COUNT = 30
+
+function parseCount(raw: string | undefined): number {
+  const n = Number(raw)
+  if (!Number.isInteger(n)) return DEFAULT_COUNT
+  return Math.min(MAX_COUNT, Math.max(MIN_COUNT, n))
+}
 
 const UNIT_NAMES: Record<string, string> = {
   U01: '理論',
@@ -21,14 +31,22 @@ const UNIT_NAMES: Record<string, string> = {
 export default async function QuizPage({
   searchParams,
 }: {
-  searchParams: Promise<{ category?: string }>
+  searchParams: Promise<{ category?: string; count?: string; mode?: string }>
 }) {
   const params = await searchParams
   const category = params.category
   const categoryCodes = category ? [category] : undefined
-  const unitName = category ? UNIT_NAMES[category] : undefined
+  const isMistakeMode = params.mode === 'mistakes'
+  const unitName = isMistakeMode
+    ? '間違いノート復習'
+    : category
+      ? UNIT_NAMES[category]
+      : undefined
+  const count = parseCount(params.count)
 
-  const questions = await getQuizQuestions(12, categoryCodes)
+  const questions = isMistakeMode
+    ? await getMistakeQuizQuestions(count)
+    : await getQuizQuestions(count, categoryCodes)
 
   if (questions.length === 0) {
     return (
@@ -36,12 +54,18 @@ export default async function QuizPage({
         <div className="flex flex-col items-center justify-center min-h-[60vh] px-4">
           <div className="text-4xl mb-4">🎉</div>
           <h1 className="text-xl font-bold mb-2">
-            {unitName ? `${unitName}の学習は完了!` : '今日の学習は完了!'}
+            {isMistakeMode
+              ? '間違いノートは空です!'
+              : unitName
+                ? `${unitName}の学習は完了!`
+                : '今日の学習は完了!'}
           </h1>
           <p className="text-muted text-sm text-center mb-4">
-            {unitName
-              ? `${unitName}の問題をすべてクリア済みです。復習が必要な問題が出てきたらまた出題されます。`
-              : '全229問をクリア済みです。素晴らしい！復習が必要な問題が出てきたらまた出題されます。'}
+            {isMistakeMode
+              ? '復習が必要な問題はありません。この調子で学習を続けましょう！'
+              : unitName
+                ? `${unitName}の問題をすべてクリア済みです。復習が必要な問題が出てきたらまた出題されます。`
+                : '全229問をクリア済みです。素晴らしい！復習が必要な問題が出てきたらまた出題されます。'}
           </p>
           <Link
             href="/"

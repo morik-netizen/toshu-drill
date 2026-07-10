@@ -1,5 +1,5 @@
 import { calculateSM2, evaluateQuality, calculateMasteryThreshold, isMastered } from '../sm2'
-import type { SM2Input, SM2Output, Quality, MasteryThreshold } from '../types'
+import type { SM2Input, MasteryThreshold } from '../types'
 
 // ============================================
 // evaluateQuality
