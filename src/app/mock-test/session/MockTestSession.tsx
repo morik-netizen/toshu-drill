@@ -3,6 +3,7 @@
 import { useState, useCallback, useRef } from 'react'
 import { QuizCard } from '@/components/QuizCard'
 import { MaruBatsuCard } from '@/components/MaruBatsuCard'
+import { MockTestReview } from '@/components/MockTestReview'
 import { submitMockTest } from '@/lib/actions/practice-test'
 import type { QuestionDTO } from '@/lib/actions/quiz'
 import type { MockTestSubmitResult } from '@/lib/actions/practice-test'
@@ -199,6 +200,9 @@ export function MockTestSession({ questions }: Props) {
             </div>
           </div>
         )}
+
+        {/* 間違えた問題のレビュー */}
+        <MockTestReview questions={questions} answers={state.answers} />
 
         {/* アクション */}
         <div className="flex flex-col gap-3">
